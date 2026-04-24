@@ -1,0 +1,28 @@
+{
+  "name": "lexdesk-backend",
+  "version": "1.0.0",
+  "description": "Backend do sistema LexDesk para escritórios de advocacia",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "npx prisma studio"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/jwt": "^8.0.1",
+    "@prisma/client": "^5.10.0",
+    "bcryptjs": "^2.4.3",
+    "fastify": "^4.26.2",
+    "fastify-plugin": "^4.5.1",
+    "dotenv": "^16.4.5",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.0"
+  }
+}

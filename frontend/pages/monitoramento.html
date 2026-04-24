@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexDesk — Monitoramento</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/sidebar.css" />
+  <link rel="stylesheet" href="../css/monitoramento.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="logo"><h1>LexDesk</h1><p>Gestão Jurídica</p></div>
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="../index.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
+          <a href="processos.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Processos
+            <span class="badge">47</span>
+          </a>
+          <a href="clientes.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Clientes
+          </a>
+          <a href="agenda.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Agenda
+            <span class="badge badge--green">3</span>
+          </a>
+          <a href="monitoramento.html" class="nav-item active">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Monitoramento
+            <span class="badge" id="badge-intimacoes">3</span>
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="honorarios.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Honorários
+          </a>
+          <a href="custas.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Custas
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Sistema</span>
+          <a href="configuracoes.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+            Configurações
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user">
+          <p class="sidebar-user__name">Rafael Silva</p>
+          <p class="sidebar-user__role">Advogado Sócio</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <div class="topbar__left">
+          <h2 class="topbar__title">Monitoramento</h2>
+          <span class="topbar__sub" id="sync-status">Última sincronização: hoje às 09:14</span>
+        </div>
+        <div class="topbar__right">
+          <button class="btn btn--secondary" id="btn-sync">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Sincronizar
+          </button>
+          <button class="btn btn--primary" id="btn-importar">+ Importar processos</button>
+        </div>
+      </header>
+
+      <div class="mon-tabs">
+        <div class="mon-tab active" data-pane="monitoramento">Monitoramento</div>
+        <div class="mon-tab" data-pane="intimacoes">
+          Intimações
+          <span class="mon-tab-badge" id="tab-badge">3</span>
+        </div>
+        <div class="mon-tab" data-pane="importar">Importar processo</div>
+      </div>
+
+      <div class="mon-content">
+
+        <!-- ABA 1: MONITORAMENTO -->
+        <div class="mon-pane active" id="pane-monitoramento">
+          <div class="mon-stats" id="mon-stats"></div>
+          <div class="mon-panel">
+            <div class="mon-panel-header">
+              <h4>Processos monitorados</h4>
+              <div class="mon-filters">
+                <button class="mon-filter active" data-filter="todos">Todos</button>
+                <button class="mon-filter" data-filter="intimacao">Com intimação</button>
+                <button class="mon-filter" data-filter="sem-atualizacao">Sem atualização</button>
+              </div>
+            </div>
+            <div class="mon-table-head">
+              <span>Processo</span>
+              <span>Tribunal</span>
+              <span>Última atualização</span>
+              <span>Andamentos</span>
+              <span>Status</span>
+              <span></span>
+            </div>
+            <div id="mon-tbody"></div>
+          </div>
+        </div>
+
+        <!-- ABA 2: INTIMAÇÕES -->
+        <div class="mon-pane" id="pane-intimacoes">
+          <div id="intimacoes-lista"></div>
+        </div>
+
+        <!-- ABA 3: IMPORTAR -->
+        <div class="mon-pane" id="pane-importar">
+          <div class="import-hero">
+            <h3>Importar processos do tribunal</h3>
+            <p>Busque por OAB, CPF/CNPJ ou número CNJ do processo. Todos os processos encontrados serão listados para você selecionar quais deseja monitorar.</p>
+            <div class="import-form">
+              <select class="import-type" id="import-type">
+                <option value="oab">OAB</option>
+                <option value="cpf">CPF / CNPJ</option>
+                <option value="cnj">Número CNJ</option>
+              </select>
+              <input class="import-input" id="import-input" placeholder="SP 123.456" />
+              <button class="btn btn--primary" id="btn-buscar">Buscar</button>
+            </div>
+          </div>
+          <div id="import-resultado"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/store.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/confirm.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/monitoramento-data.js"></script>
+  <script src="../js/monitoramento.js"></script>
+  <script src="../js/responsive.js"></script>
+</body>
+</html>

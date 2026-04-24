@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexDesk — Processos</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/sidebar.css" />
+  <link rel="stylesheet" href="../css/topbar.css" />
+  <link rel="stylesheet" href="../css/processos.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>LexDesk</h1>
+        <p>Gestão Jurídica</p>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="../index.html" class="nav-item" data-page="dashboard">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
+          <a href="processos.html" class="nav-item active" data-page="processos">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Processos
+            <span class="badge" id="badge-processos">47</span>
+          </a>
+          <a href="clientes.html" class="nav-item" data-page="clientes">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Clientes
+          </a>
+          <a href="agenda.html" class="nav-item" data-page="agenda">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Agenda
+            <span class="badge badge--green">3</span>
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="honorarios.html" class="nav-item" data-page="honorarios">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Honorários
+          </a>
+          <a href="custas.html" class="nav-item" data-page="custas">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Custas
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Sistema</span>
+          <a href="configuracoes.html" class="nav-item" data-page="configuracoes">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+            Configurações
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user">
+          <p class="sidebar-user__name">Rafael Silva</p>
+          <p class="sidebar-user__role">Advogado Sócio</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <h2 class="topbar__greeting">Processos</h2>
+          <span class="topbar__sub" id="total-label">47 processos ativos</span>
+        </div>
+        <div class="topbar__right">
+          <button class="btn btn--secondary" id="btn-exportar">Exportar</button>
+          <button class="btn btn--primary" id="btn-novo">+ Novo Processo</button>
+        </div>
+      </header>
+
+      <!-- FILTROS -->
+      <div class="filters-bar">
+        <div class="search-bar">
+          <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="f-busca" placeholder="Buscar por processo, cliente ou número..." />
+        </div>
+        <select class="filter-select" id="f-status">
+          <option value="">Todos os status</option>
+          <option value="Urgente">Urgente</option>
+          <option value="Aguardando">Aguardando</option>
+          <option value="Em andamento">Em andamento</option>
+        </select>
+        <select class="filter-select" id="f-responsavel">
+          <option value="">Responsável</option>
+          <option value="Rafael Silva">Rafael Silva</option>
+          <option value="Beatriz Mendes">Beatriz Mendes</option>
+          <option value="Thiago Carvalho">Thiago Carvalho</option>
+        </select>
+        <select class="filter-select" id="f-prazo">
+          <option value="">Prazo</option>
+          <option value="hoje">Hoje</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes">Este mês</option>
+        </select>
+        <button class="btn-clear" id="btn-limpar">Limpar</button>
+      </div>
+
+      <!-- CONTEÚDO -->
+      <div class="proc-content">
+
+        <!-- TABELA -->
+        <div class="proc-table-wrap">
+          <div class="proc-table-head">
+            <span data-col="num">Número</span>
+            <span data-col="tipo">Tipo / Ação</span>
+            <span data-col="cliente">Cliente</span>
+            <span data-col="resp">Responsável</span>
+            <span data-col="status">Status</span>
+            <span data-col="prazo">Prazo</span>
+            <span data-col="vara">Vara / Tribunal</span>
+            <span></span>
+          </div>
+          <div id="proc-tbody"></div>
+          <div class="proc-count" id="proc-count"></div>
+        </div>
+
+        <!-- PAINEL LATERAL -->
+        <aside class="side-panel" id="side-panel">
+          <div class="sp-empty" id="sp-empty">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <p>Selecione um processo para ver o resumo</p>
+          </div>
+          <div id="sp-detail"></div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL NOVO PROCESSO -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Novo Processo</h3>
+        <button class="modal-close" id="modal-close">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tipo de Ação</label>
+          <input type="text" id="f-tipo" placeholder="Ex: Ação Trabalhista" />
+        </div>
+        <div class="form-group">
+          <label>Número do Processo</label>
+          <input type="text" id="f-numero" placeholder="0000000-00.0000.0.00.0000" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" id="f-cliente" placeholder="Nome do cliente" />
+          </div>
+          <div class="form-group">
+            <label>Responsável</label>
+            <select id="f-resp-modal">
+              <option value="Rafael Silva">Rafael Silva</option>
+              <option value="Beatriz Mendes">Beatriz Mendes</option>
+              <option value="Thiago Carvalho">Thiago Carvalho</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="f-status-modal">
+              <option value="Em andamento">Em andamento</option>
+              <option value="Aguardando">Aguardando</option>
+              <option value="Urgente">Urgente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Prazo</label>
+            <input type="date" id="f-prazo-modal" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vara / Tribunal</label>
+            <input type="text" id="f-vara" placeholder="Ex: 1ª Vara Cível" />
+          </div>
+          <div class="form-group">
+            <label>Valor da Causa</label>
+            <input type="text" id="f-valor" placeholder="Ex: R$ 50.000" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="modal-cancel">Cancelar</button>
+        <button class="btn btn--primary" id="modal-save">Salvar Processo</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/processos-data.js"></script>
+  <script src="../js/processos.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/confirm.js"></script>
+  <script src="../js/responsive.js"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NS Jurídico</title>
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/topbar.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>NS</h1>
+        <p>Jurídico</p>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="index.html"         class="nav-item active" data-page="dashboard">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
+          <a href="pages/processos.html" class="nav-item" data-page="processos">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Processos
+            <span class="badge">47</span>
+          </a>
+          <a href="pages/clientes.html" class="nav-item" data-page="clientes">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Clientes
+          </a>
+          <a href="pages/agenda.html" class="nav-item" data-page="agenda">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Agenda
+            <span class="badge badge--green">3</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="pages/honorarios.html" class="nav-item" data-page="honorarios">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Honorários
+          </a>
+          <a href="pages/custas.html" class="nav-item" data-page="custas">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Custas
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-label">Sistema</span>
+          <a href="pages/configuracoes.html" class="nav-item" data-page="configuracoes">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+            Configurações
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user">
+          <p class="sidebar-user__name">Nillis Nascimento</p>
+          <p class="sidebar-user__role">Advogado Sócio</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <h2 class="topbar__greeting">Bom dia, <em>Nillis</em> 👋</h2>
+        <div class="topbar__right">
+          <div class="search-bar">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar processo ou cliente..." id="search-input" />
+          </div>
+          <button class="icon-btn" id="btn-notificacoes" title="Notificações">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <button class="icon-btn" title="Perfil">
+            <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="content" id="page-content">
+
+        <div class="stats-grid">
+          <div class="stat-card stat-card--primary">
+            <div class="stat-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span class="stat-badge stat-badge--light">+4 este mês</span>
+            <div class="stat-num">47</div>
+            <div class="stat-label">Processos ativos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <span class="stat-badge stat-badge--red">3 urgentes</span>
+            <div class="stat-num">12</div>
+            <div class="stat-label">Prazos esta semana</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <span class="stat-badge stat-badge--blue">+2 novos</span>
+            <div class="stat-num">34</div>
+            <div class="stat-label">Clientes ativos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="stat-badge stat-badge--green">↑ R$ 4.200</span>
+            <div class="stat-num stat-num--sm">R$ 38k</div>
+            <div class="stat-label">Honorários / mês</div>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Processos Recentes</h3>
+              <a href="pages/processos.html" class="panel-link">Ver todos →</a>
+            </div>
+            <div class="table-head">
+              <span>Processo</span>
+              <span>Cliente</span>
+              <span>Status</span>
+              <span>Prazo</span>
+              <span></span>
+            </div>
+            <div class="table-body" id="processos-table"></div>
+            <div class="panel-footer">
+              <button class="btn btn--primary" id="novo-processo-btn">+ Novo Processo</button>
+              <button class="btn btn--secondary">Filtrar</button>
+              <button class="btn btn--secondary">Exportar</button>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Agenda de Hoje</h3>
+                <a href="pages/agenda.html" class="panel-link">Ver semana →</a>
+              </div>
+              <div class="agenda-list">
+                <div class="agenda-item">
+                  <div class="agenda-time">
+                    <span class="agenda-time__hour">9</span>
+                    <span class="agenda-time__period">AM</span>
+                  </div>
+                  <div class="agenda-info">
+                    <h4>Audiência — TRT 2ª Região</h4>
+                    <p>Maria Fernanda Costa</p>
+                  </div>
+                  <span class="tag tag--hoje">Hoje</span>
+                </div>
+                <div class="agenda-item">
+                  <div class="agenda-time">
+                    <span class="agenda-time__hour">14</span>
+                    <span class="agenda-time__period">PM</span>
+                  </div>
+                  <div class="agenda-info">
+                    <h4>Reunião com cliente</h4>
+                    <p>Construtora Viva S.A.</p>
+                  </div>
+                  <span class="tag tag--escrit">Escrit.</span>
+                </div>
+                <div class="agenda-item">
+                  <div class="agenda-time">
+                    <span class="agenda-time__hour">16</span>
+                    <span class="agenda-time__period">PM</span>
+                  </div>
+                  <div class="agenda-info">
+                    <h4>Protocolo de petição</h4>
+                    <p>Ação Trabalhista #0012345</p>
+                  </div>
+                  <span class="tag tag--digital">Digital</span>
+                </div>
+              </div>
+              <div class="panel-footer panel-footer--single">
+                <button class="btn btn--primary" onclick="window.location.href='pages/agenda.html'">+ Novo evento</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Equipe</h3>
+                <a href="pages/configuracoes.html" class="panel-link">Gerenciar →</a>
+              </div>
+              <div class="equipe-list">
+                <div class="equipe-item">
+                  <div class="avatar" style="background:#2d5a3d;">RS</div>
+                  <div class="equipe-info">
+                    <p class="equipe-info__name">Nillis Nascimento</p>
+                    <p class="equipe-info__role">Advogado Sócio</p>
+                  </div>
+                  <span class="online-dot online-dot--active"></span>
+                </div>
+                <div class="equipe-item">
+                  <div class="avatar" style="background: #2d5a3d;">TC</div>
+                  <div class="equipe-info">
+                    <p class="equipe-info__name">Thiago Sales</p>
+                    <p class="equipe-info__role">Advogado Sócio</p>
+                  </div>
+                  <span class="online-dot"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Novo Processo</h3>
+        <button class="modal-close" id="modal-close">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tipo de Ação</label>
+          <input type="text" placeholder="Ex: Ação Trabalhista" id="f-tipo" />
+        </div>
+        <div class="form-group">
+          <label>Número do Processo</label>
+          <input type="text" placeholder="0000000-00.0000.0.00.0000" id="f-numero" />
+        </div>
+        <div class="form-group">
+          <label>Cliente</label>
+          <input type="text" placeholder="Nome do cliente" id="f-cliente" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="f-status">
+              <option value="Em andamento">Em andamento</option>
+              <option value="Aguardando">Aguardando</option>
+              <option value="Urgente">Urgente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Prazo</label>
+            <input type="date" id="f-prazo" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="modal-cancel">Cancelar</button>
+        <button class="btn btn--primary" id="modal-save">Salvar Processo</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/responsive.js"></script>
+</body>
+</html>
+</body>
+</html>

@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ESCRITÓRIO ───────────────────────────────────────────────
+model Escritorio {
+  id        String   @id @default(uuid())
+  nome      String
+  cnpj      String?  @unique
+  email     String?
+  telefone  String?
+  endereco  String?
+  logoUrl   String?
+  criadoEm  DateTime @default(now())
+
+  usuarios  Usuario[]
+  clientes  Cliente[]
+  processos Processo[]
+  eventos   Evento[]
+  financeiro Lancamento[]
+
+  @@map("escritorios")
+}
+
+// ─── USUÁRIO (ADVOGADOS E STAFF) ──────────────────────────────
+model Usuario {
+  id           String   @id @default(uuid())
+  escritorioId String
+  nome         String
+  email        String   @unique
+  senha        String
+  oab          String?
+  cargo        Cargo    @default(ADVOGADO)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  escritorio Escritorio @relation(fields: [escritorioId], references: [id])
+  processos  ProcessoAdvogado[]
+  eventos    Evento[]
+  lancamentos Lancamento[]
+
+  @@map("usuarios")
+}
+
+enum Cargo {
+  ADMIN
+  ADVOGADO
+  ESTAGIARIO
+  SECRETARIO
+}
+
+// ─── CLIENTE ──────────────────────────────────────────────────
+model Cliente {
+  id           String      @id @default(uuid())
+  escritorioId String
+  nome         String
+  tipo         TipoCliente @default(PESSOA_FISICA)
+  cpfCnpj      String?
+  email        String?
+  telefone     String?
+  endereco     String?
+  observacoes  String?
+  ativo        Boolean     @default(true)
+  criadoEm     DateTime    @default(now())
+  atualizadoEm DateTime    @updatedAt
+
+  escritorio Escritorio @relation(fields: [escritorioId], references: [id])
+  processos  Processo[]
+  lancamentos Lancamento[]
+
+  @@map("clientes")
+}
+
+enum TipoCliente {
+  PESSOA_FISICA
+  PESSOA_JURIDICA
+}
+
+// ─── PROCESSO ─────────────────────────────────────────────────
+model Processo {
+  id              String         @id @default(uuid())
+  escritorioId    String
+  clienteId       String
+  numero          String?        @unique
+  titulo          String
+  area            AreaJuridica
+  status          StatusProcesso @default(ATIVO)
+  tribunal        String?
+  vara            String?
+  comarca         String?
+  valorCausa      Float?
+  dataDistribuicao DateTime?
+  descricao       String?
+  criadoEm        DateTime       @default(now())
+  atualizadoEm    DateTime       @updatedAt
+
+  escritorio  Escritorio         @relation(fields: [escritorioId], references: [id])
+  cliente     Cliente            @relation(fields: [clienteId], references: [id])
+  advogados   ProcessoAdvogado[]
+  andamentos  Andamento[]
+  documentos  Documento[]
+  eventos     Evento[]
+  lancamentos Lancamento[]
+
+  @@map("processos")
+}
+
+enum AreaJuridica {
+  CIVIL
+  TRABALHISTA
+  CRIMINAL
+  TRIBUTARIO
+  EMPRESARIAL
+  FAMILIA
+  PREVIDENCIARIO
+  ADMINISTRATIVO
+  OUTRO
+}
+
+enum StatusProcesso {
+  ATIVO
+  ARQUIVADO
+  ENCERRADO
+  SUSPENSO
+}
+
+// ─── ADVOGADO NO PROCESSO (M:N) ───────────────────────────────
+model ProcessoAdvogado {
+  processoId String
+  usuarioId  String
+  principal  Boolean @default(false)
+
+  processo Processo @relation(fields: [processoId], references: [id])
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@id([processoId, usuarioId])
+  @@map("processos_advogados")
+}
+
+// ─── ANDAMENTO PROCESSUAL ─────────────────────────────────────
+model Andamento {
+  id         String   @id @default(uuid())
+  processoId String
+  descricao  String
+  data       DateTime @default(now())
+  origem     String?  // manual, datajud, etc.
+  criadoEm  DateTime @default(now())
+
+  processo Processo @relation(fields: [processoId], references: [id])
+
+  @@map("andamentos")
+}
+
+// ─── DOCUMENTO ────────────────────────────────────────────────
+model Documento {
+  id         String   @id @default(uuid())
+  processoId String
+  nome       String
+  tipo       String?
+  url        String
+  tamanho    Int?
+  criadoEm  DateTime @default(now())
+
+  processo Processo @relation(fields: [processoId], references: [id])
+
+  @@map("documentos")
+}
+
+// ─── AGENDA / EVENTO ──────────────────────────────────────────
+model Evento {
+  id           String      @id @default(uuid())
+  escritorioId String
+  usuarioId    String
+  processoId   String?
+  titulo       String
+  tipo         TipoEvento
+  dataInicio   DateTime
+  dataFim      DateTime?
+  local        String?
+  descricao    String?
+  concluido    Boolean     @default(false)
+  criadoEm    DateTime    @default(now())
+
+  escritorio Escritorio @relation(fields: [escritorioId], references: [id])
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+  processo   Processo?  @relation(fields: [processoId], references: [id])
+
+  @@map("eventos")
+}
+
+enum TipoEvento {
+  AUDIENCIA
+  REUNIAO
+  PRAZO
+  DILIGENCIA
+  OUTRO
+}
+
+// ─── FINANCEIRO ───────────────────────────────────────────────
+model Lancamento {
+  id           String          @id @default(uuid())
+  escritorioId String
+  clienteId    String?
+  processoId   String?
+  usuarioId    String
+  tipo         TipoLancamento
+  categoria    String
+  descricao    String
+  valor        Float
+  dataVencimento DateTime
+  dataPagamento  DateTime?
+  status       StatusLancamento @default(PENDENTE)
+  criadoEm    DateTime         @default(now())
+  atualizadoEm DateTime        @updatedAt
+
+  escritorio Escritorio @relation(fields: [escritorioId], references: [id])
+  cliente    Cliente?   @relation(fields: [clienteId], references: [id])
+  processo   Processo?  @relation(fields: [processoId], references: [id])
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@map("lancamentos")
+}
+
+enum TipoLancamento {
+  RECEITA
+  DESPESA
+}
+
+enum StatusLancamento {
+  PENDENTE
+  PAGO
+  CANCELADO
+  ATRASADO
+}

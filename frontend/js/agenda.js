@@ -1,0 +1,189 @@
+let weekOffset = 0;
+
+// ---------- SEMANA ----------
+function getSemana(offset) {
+  const hoje  = new Date();
+  const dow   = hoje.getDay(); // 0=Dom
+  const seg   = new Date(hoje);
+  seg.setDate(hoje.getDate() - (dow === 0 ? 6 : dow - 1) + offset * 7);
+
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(seg);
+    d.setDate(seg.getDate() + i);
+    return d;
+  });
+}
+
+// ---------- RENDER ----------
+function renderCalendar() {
+  const semana     = getSemana(weekOffset);
+  const hoje       = new Date();
+  const filtroResp = document.getElementById('f-responsavel').value;
+
+  renderHeader(semana, hoje);
+  renderGrid(semana, hoje, filtroResp);
+  atualizarLabelSemana(semana);
+}
+
+function renderHeader(semana, hoje) {
+  const head = document.getElementById('cal-head');
+  head.innerHTML =
+    '<div class="cal-head-empty"></div>' +
+    semana.map(d => {
+      const isToday = d.toDateString() === hoje.toDateString();
+      return `<div class="day-col-head${isToday ? ' today' : ''}">
+        <div class="day-name">${DIAS[d.getDay()]}</div>
+        <div class="day-num">${d.getDate()}</div>
+      </div>`;
+    }).join('');
+}
+
+function renderGrid(semana, hoje, filtroResp) {
+  const grid = document.getElementById('cal-grid');
+  const evsFiltrados = eventosData.filter(e => !filtroResp || e.resp === filtroResp);
+
+  // Coluna de horas
+  const timeCol = `<div class="time-col">${
+    HOURS.map(h => `<div class="time-slot">${h}h</div>`).join('')
+  }</div>`;
+
+  // Colunas dos dias (Seg=0 ... Dom=6)
+  const diasCols = semana.map((d, di) => {
+    const isToday   = d.toDateString() === hoje.toDateString();
+    const diaSemana = (d.getDay() + 6) % 7; // converte: Dom=0→6, Seg=1→0 ...
+    const evsDay    = evsFiltrados.filter(e => e.dia === diaSemana);
+
+    const linhas = HOURS.map((_, i) =>
+      `<div class="hour-line" style="top:${i * HOUR_H}px"></div>`
+    ).join('');
+
+    const blocos = evsDay.map(ev => eventoHTML(ev)).join('');
+
+    // Linha do horário atual (só hoje)
+    const nowLine = isToday ? nowLineHTML() : '';
+
+    // Empty state se não houver eventos
+    const empty = (!evsDay.length && filtroResp)
+      ? '<div class="ev-empty">—</div>'
+      : '';
+
+    return `<div class="day-col${isToday ? ' today' : ''}">${linhas}${nowLine}${blocos}${empty}</div>`;
+  }).join('');
+
+  grid.innerHTML = timeCol + diasCols;
+}
+
+function eventoHTML(ev) {
+  const top    = (ev.hIni - HOURS[0]) * HOUR_H;
+  const height = Math.max((ev.hFim - ev.hIni) * HOUR_H - 4, 24);
+  const cls    = tipoClass[ev.tipo] || 'ev-tarefa';
+  const hIni   = formatHora(ev.hIni);
+  const hFim   = formatHora(ev.hFim);
+
+  return `
+    <div class="event ${cls}" style="top:${top}px;height:${height}px" data-id="${ev.id}">
+      <div class="ev-title">${ev.titulo}</div>
+      ${height > 36 ? `<div class="ev-sub">${ev.sub}</div>` : ''}
+      ${height > 52 ? `<div class="ev-time">${hIni} — ${hFim}</div>` : ''}
+    </div>`;
+}
+
+function nowLineHTML() {
+  const agora   = new Date();
+  const hDecimal = agora.getHours() + agora.getMinutes() / 60;
+  if (hDecimal < HOURS[0] || hDecimal > HOURS[HOURS.length - 1] + 1) return '';
+  const top = (hDecimal - HOURS[0]) * HOUR_H;
+  return `<div class="now-line" style="top:${top}px"></div>`;
+}
+
+function atualizarLabelSemana(semana) {
+  const ini = semana[0];
+  const fim = semana[6];
+  const label = ini.getMonth() === fim.getMonth()
+    ? `${ini.getDate()} — ${fim.getDate()} ${MESES[fim.getMonth()]} ${fim.getFullYear()}`
+    : `${ini.getDate()} ${MESES[ini.getMonth()]} — ${fim.getDate()} ${MESES[fim.getMonth()]} ${fim.getFullYear()}`;
+  document.getElementById('week-label').textContent = label;
+}
+
+function formatHora(h) {
+  const hh = Math.floor(h);
+  const mm = h % 1 ? '30' : '00';
+  return `${hh}h${mm}`;
+}
+
+// ---------- MODAL ----------
+const overlay   = document.getElementById('modal-overlay');
+const btnNovo   = document.getElementById('btn-novo');
+const btnClose  = document.getElementById('modal-close');
+const btnCancel = document.getElementById('modal-cancel');
+const btnSave   = document.getElementById('modal-save');
+
+function abrirModal()  { overlay.classList.add('active'); document.getElementById('f-titulo').focus(); }
+function fecharModal() { overlay.classList.remove('active'); limparModal(); }
+
+function limparModal() {
+  ['f-titulo', 'f-sub', 'f-data'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f-tipo').value      = 'audiencia';
+  document.getElementById('f-resp-modal').value = 'Rafael Silva';
+  document.getElementById('f-hora-ini').value  = '09:00';
+  document.getElementById('f-hora-fim').value  = '10:00';
+}
+
+function salvarEvento() {
+  const titulo  = document.getElementById('f-titulo').value.trim();
+  const sub     = document.getElementById('f-sub').value.trim();
+  const tipo    = document.getElementById('f-tipo').value;
+  const resp    = document.getElementById('f-resp-modal').value;
+  const data    = document.getElementById('f-data').value;
+  const horaIni = document.getElementById('f-hora-ini').value;
+  const horaFim = document.getElementById('f-hora-fim').value;
+
+  if (!titulo || !data) {
+    alert('Preencha o título e a data do evento.');
+    return;
+  }
+
+  // Validação
+Toast.show('Preencha o título e a data do evento.', 'error');
+// Sucesso
+Toast.show('Evento criado com sucesso!', 'success');
+
+  const dataObj   = new Date(data + 'T12:00:00');
+  const diaSemana = (dataObj.getDay() + 6) % 7;
+
+  const [hIniH, hIniM] = horaIni.split(':').map(Number);
+  const [hFimH, hFimM] = horaFim.split(':').map(Number);
+  const hIni = hIniH + hIniM / 60;
+  const hFim = hFimH + hFimM / 60;
+
+  if (hFim <= hIni) {
+    alert('A hora de fim deve ser maior que a hora de início.');
+    return;
+  }
+
+  const novoId = eventosData.length ? Math.max(...eventosData.map(e => e.id)) + 1 : 1;
+  eventosData.push({ id: novoId, titulo, sub: sub || '', tipo, resp, dia: diaSemana, hIni, hFim });
+
+  fecharModal();
+  renderCalendar();
+}
+
+// ---------- EVENTOS ----------
+document.getElementById('btn-prev').addEventListener('click', () => { weekOffset--; renderCalendar(); });
+document.getElementById('btn-next').addEventListener('click', () => { weekOffset++; renderCalendar(); });
+document.getElementById('btn-hoje').addEventListener('click', () => { weekOffset = 0; renderCalendar(); });
+document.getElementById('f-responsavel').addEventListener('change', renderCalendar);
+
+btnNovo.addEventListener('click', abrirModal);
+btnClose.addEventListener('click', fecharModal);
+btnCancel.addEventListener('click', fecharModal);
+btnSave.addEventListener('click', salvarEvento);
+overlay.addEventListener('click', e => { if (e.target === overlay) fecharModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
+
+// ---------- INIT ----------
+document.addEventListener('DOMContentLoaded', () => renderCalendar())
+Notifications.init('btn-notificacoes');

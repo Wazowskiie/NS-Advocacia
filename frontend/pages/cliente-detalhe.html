@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexDesk — Detalhe do Cliente</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/detalhe.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo"><h1>LexDesk</h1><p>Gestão Jurídica</p></div>
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="../index.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+          <a href="processos.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Processos<span class="badge">47</span></a>
+          <a href="clientes.html" class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Clientes</a>
+          <a href="agenda.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda<span class="badge badge--green">3</span></a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="honorarios.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Honorários</a>
+          <a href="custas.html" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Custas</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user"><p class="sidebar-user__name">Rafael Silva</p><p class="sidebar-user__role">Advogado Sócio</p></div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="breadcrumb">
+          <a href="clientes.html">Clientes</a>
+          <span class="breadcrumb__sep">›</span>
+          <span class="breadcrumb__current" id="breadcrumb-nome">Carregando...</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn--secondary btn--sm">Editar</button>
+          <button class="btn btn--primary btn--sm">+ Novo Processo</button>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="hero-top">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div id="hero-avatar" style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;color:#fff;flex-shrink:0"></div>
+            <div>
+              <h1 class="hero-title" id="hero-nome">—</h1>
+              <p class="hero-sub" id="hero-sub">—</p>
+              <div class="hero-badges" id="hero-badges"></div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-stats" id="hero-stats"></div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-pane="dados">Dados cadastrais</div>
+        <div class="tab" data-pane="processos">Processos</div>
+        <div class="tab" data-pane="financeiro">Financeiro</div>
+      </div>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="pane-dados"></div>
+        <div class="tab-pane" id="pane-processos"></div>
+        <div class="tab-pane" id="pane-financeiro"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/store.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/confirm.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/clientes-data.js"></script>
+  <script src="../js/processos-data.js"></script>
+  <script src="../js/honorarios-data.js"></script>
+  <script src="../js/custas-data.js"></script>
+  <script src="../js/cliente-detalhe.js"></script>
+  <script src="../js/responsive.js"></script>
+</body>
+</html>

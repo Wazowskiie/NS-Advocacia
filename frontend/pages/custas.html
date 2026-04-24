@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexDesk — Custas</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/sidebar.css" />
+  <link rel="stylesheet" href="../css/custas.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>LexDesk</h1>
+        <p>Gestão Jurídica</p>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="../index.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
+          <a href="processos.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Processos
+            <span class="badge">47</span>
+          </a>
+          <a href="clientes.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Clientes
+          </a>
+          <a href="agenda.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Agenda
+            <span class="badge badge--green">3</span>
+          </a>
+          <a href="monitoramento.html" class="nav-item" data-page="monitoramento">
+          <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Monitoramento
+          <span class="badge" id="badge-intimacoes">3</span>
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="honorarios.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Honorários
+          </a>
+          <a href="custas.html" class="nav-item active">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Custas
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Sistema</span>
+          <a href="configuracoes.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+            Configurações
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user">
+          <p class="sidebar-user__name">Rafael Silva</p>
+          <p class="sidebar-user__role">Advogado Sócio</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <div class="topbar__left">
+          <h2 class="topbar__title">Custas</h2>
+          <span class="topbar__sub" id="ano-label">Ano de 2024</span>
+        </div>
+        <div class="topbar__right">
+          <select class="filter-select" id="f-ano">
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+          <button class="btn btn--primary" id="btn-novo">+ Nova Custa</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="content-grid">
+
+          <!-- CARDS -->
+          <div class="summary-cards" id="summary-cards"></div>
+
+          <!-- MID -->
+          <div class="mid-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Quem pagou</h3>
+                <span id="total-label"></span>
+              </div>
+              <div class="pagador-list" id="pagador-list"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Por tipo de custa</h3>
+              </div>
+              <div class="tipo-list" id="tipo-list"></div>
+            </div>
+          </div>
+
+          <!-- TABELA -->
+          <div class="panel table-panel">
+            <div class="filters-row">
+              <div class="search-bar">
+                <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="f-busca" placeholder="Buscar por processo ou cliente..." />
+              </div>
+              <select class="filter-select" id="f-tipo">
+                <option value="">Todos os tipos</option>
+                <option value="Taxa judiciária">Taxa judiciária</option>
+                <option value="Depósito recursal">Depósito recursal</option>
+                <option value="Peritos / assistentes">Peritos / assistentes</option>
+                <option value="Diligências / oficiais">Diligências / oficiais</option>
+                <option value="Cópias e certidões">Cópias e certidões</option>
+                <option value="Outras despesas">Outras despesas</option>
+              </select>
+              <select class="filter-select" id="f-pagador">
+                <option value="">Quem pagou</option>
+                <option value="Escritório">Escritório</option>
+                <option value="Cliente">Cliente</option>
+              </select>
+              <select class="filter-select" id="f-status">
+                <option value="">Todos status</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Reembolsado">Reembolsado</option>
+                <option value="Pago">Pago</option>
+              </select>
+              <button class="btn-clear" id="btn-limpar">Limpar</button>
+            </div>
+            <div class="table-head">
+              <span>Processo</span>
+              <span>Cliente</span>
+              <span>Tipo</span>
+              <span>Valor</span>
+              <span>Data</span>
+              <span>Pago por</span>
+              <span>Status</span>
+              <span></span>
+            </div>
+            <div id="table-body"></div>
+            <div class="table-count" id="table-count"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Nova Custa</h3>
+        <button class="modal-close" id="modal-close">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Processo</label>
+            <input type="text" id="f-processo" placeholder="Ex: Ação Trabalhista" />
+          </div>
+          <div class="form-group">
+            <label>Número</label>
+            <input type="text" id="f-num" placeholder="#0000000" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" id="f-cliente" placeholder="Nome do cliente" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de custa</label>
+            <select id="f-tipo-modal">
+              <option value="Taxa judiciária">Taxa judiciária</option>
+              <option value="Depósito recursal">Depósito recursal</option>
+              <option value="Peritos / assistentes">Peritos / assistentes</option>
+              <option value="Diligências / oficiais">Diligências / oficiais</option>
+              <option value="Cópias e certidões">Cópias e certidões</option>
+              <option value="Outras despesas">Outras despesas</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="number" id="f-valor" placeholder="0,00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Data</label>
+            <input type="date" id="f-data" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pago por</label>
+            <select id="f-pagador-modal">
+              <option value="Escritório">Escritório (adiantou)</option>
+              <option value="Cliente">Cliente (pagou direto)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="f-status-modal">
+              <option value="Pendente">Pendente reembolso</option>
+              <option value="Reembolsado">Reembolsado</option>
+              <option value="Pago">Pago pelo cliente</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observação</label>
+          <input type="text" id="f-obs" placeholder="Ex: Ref. audiência de instrução" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="modal-cancel">Cancelar</button>
+        <button class="btn btn--primary" id="modal-save">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/custas-data.js"></script>
+  <script src="../js/custas.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/confirm.js"></script>
+  <script src="../js/responsive.js"></script>
+</body>
+</html>

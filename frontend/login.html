@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NS Advocacia — Login</title>
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg, #f7f6f2);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo h1 {
+      font-family: 'Lora', serif;
+      font-size: 2rem;
+      color: var(--primary, #2d5a3d);
+      margin: 0;
+    }
+
+    .login-logo p {
+      font-size: 0.85rem;
+      color: #888;
+      margin: 4px 0 0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary, #2d5a3d);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary, #2d5a3d);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-login:hover { opacity: 0.9; }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .login-erro {
+      background: #fef2f2;
+      color: #c0392b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .login-erro.visivel { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>NS</h1>
+      <p>Advocacia</p>
+    </div>
+
+    <div class="login-erro" id="login-erro"></div>
+
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email" />
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <button class="btn-login" id="btn-entrar">Entrar</button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Se já estiver logado, vai direto pro dashboard
+    if (Auth.estaLogado()) {
+      window.location.href = 'index.html';
+    }
+
+    async function fazerLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      const erro  = document.getElementById('login-erro');
+      const btn   = document.getElementById('btn-entrar');
+
+      erro.classList.remove('visivel');
+
+      if (!email || !senha) {
+        erro.textContent = 'Preencha e-mail e senha.';
+        erro.classList.add('visivel');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+
+      try {
+        await Auth.login(email, senha);
+        window.location.href = 'index.html';
+      } catch (err) {
+        erro.textContent = err.message || 'E-mail ou senha incorretos.';
+        erro.classList.add('visivel');
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    }
+
+    document.getElementById('btn-entrar').addEventListener('click', fazerLogin);
+
+    // Login com Enter
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') fazerLogin();
+    });
+  </script>
+
+</body>
+</html>

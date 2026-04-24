@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexDesk — Configurações</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/sidebar.css" />
+  <link rel="stylesheet" href="../css/configuracoes.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="logo"><h1>LexDesk</h1><p>Gestão Jurídica</p></div>
+      <nav class="nav">
+        <div class="nav-section">
+          <span class="nav-label">Principal</span>
+          <a href="../index.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
+          <a href="processos.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Processos
+            <span class="badge">47</span>
+          </a>
+          <a href="clientes.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Clientes
+          </a>
+          <a href="agenda.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Agenda
+            <span class="badge badge--green">3</span>
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Financeiro</span>
+          <a href="honorarios.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Honorários
+          </a>
+          <a href="custas.html" class="nav-item">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Custas
+          </a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Sistema</span>
+          <a href="configuracoes.html" class="nav-item active">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+            Configurações
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="avatar avatar--sm">RS</div>
+        <div class="sidebar-user">
+          <p class="sidebar-user__name">Rafael Silva</p>
+          <p class="sidebar-user__role">Advogado Sócio</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <h2 class="topbar__title">Configurações</h2>
+        <button class="btn btn--primary" id="btn-salvar">Salvar alterações</button>
+      </header>
+
+      <div class="cfg-tabs">
+        <div class="cfg-tab active" data-pane="perfil">Perfil</div>
+        <div class="cfg-tab" data-pane="escritorio">Escritório</div>
+        <div class="cfg-tab" data-pane="equipe">Equipe</div>
+        <div class="cfg-tab" data-pane="notificacoes">Notificações</div>
+        <div class="cfg-tab" data-pane="preferencias">Preferências</div>
+      </div>
+
+      <div class="cfg-content">
+
+        <!-- PERFIL -->
+        <div class="cfg-pane active" id="pane-perfil">
+
+          <div class="cfg-section">
+            <h3>Dados pessoais</h3>
+            <div class="cfg-card">
+              <div class="profile-hero">
+                <div class="profile-avatar" id="profile-avatar">
+                  RS
+                  <div class="profile-avatar__edit">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </div>
+                </div>
+                <div>
+                  <div class="profile-name" id="profile-name-display">Rafael Silva</div>
+                  <div class="profile-role">Advogado Sócio</div>
+                  <div class="profile-since">Membro desde Jan 2023</div>
+                </div>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Nome completo</span>
+                <input class="field-input" id="f-nome" value="Rafael Silva" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">E-mail</span>
+                <input class="field-input" id="f-email" type="email" value="rafael.silva@lexdesk.com.br" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">Telefone</span>
+                <input class="field-input" id="f-telefone" value="(11) 99999-0001" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">OAB</span>
+                <input class="field-input" id="f-oab" value="SP 123.456" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">Cargo</span>
+                <input class="field-input" id="f-cargo" value="Advogado Sócio" />
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Segurança</h3>
+            <div class="cfg-card">
+              <div class="field-row">
+                <span class="field-label">Senha atual</span>
+                <span class="field-value field-value--pwd">••••••••</span>
+                <button class="btn-edit" id="btn-alterar-senha">Alterar</button>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Autenticação 2 fatores</span>
+                <span class="field-value field-value--muted">Desativada</span>
+                <button class="btn-edit">Ativar</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ESCRITÓRIO -->
+        <div class="cfg-pane" id="pane-escritorio">
+
+          <div class="cfg-section">
+            <h3>Identidade</h3>
+            <div class="cfg-card">
+              <div class="logo-upload">
+                <div class="logo-box" id="logo-box">
+                  <span>LD</span>
+                </div>
+                <div class="logo-info">
+                  <p class="logo-info__title">Logo do escritório</p>
+                  <p class="logo-info__sub">PNG ou SVG · máx 2MB</p>
+                  <button class="btn-upload" id="btn-logo-upload">Fazer upload</button>
+                  <input type="file" id="logo-input" accept="image/*" style="display:none" />
+                </div>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Nome do escritório</span>
+                <input class="field-input" id="f-escritorio-nome" value="Silva & Associados Advocacia" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">CNPJ</span>
+                <input class="field-input" id="f-cnpj" value="12.345.678/0001-90" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">OAB Escritório</span>
+                <input class="field-input" id="f-oab-esc" value="SP 12.345" />
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Endereço</h3>
+            <div class="cfg-card">
+              <div class="field-row">
+                <span class="field-label">Endereço</span>
+                <input class="field-input" id="f-endereco" value="Av. Paulista, 1000 — Sala 42" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">Cidade / Estado</span>
+                <input class="field-input" id="f-cidade" value="São Paulo — SP" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">CEP</span>
+                <input class="field-input" id="f-cep" value="01310-100" />
+              </div>
+              <div class="field-row">
+                <span class="field-label">Telefone</span>
+                <input class="field-input" id="f-tel-esc" value="(11) 3000-0001" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- EQUIPE -->
+        <div class="cfg-pane" id="pane-equipe">
+
+          <div class="cfg-section">
+            <h3>Membros ativos</h3>
+            <div class="cfg-card" id="equipe-lista"></div>
+          </div>
+
+        </div>
+
+        <!-- NOTIFICAÇÕES -->
+        <div class="cfg-pane" id="pane-notificacoes">
+
+          <div class="cfg-section">
+            <h3>Alertas de processos</h3>
+            <div class="cfg-card">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Prazos urgentes</h4>
+                  <p>Notificar quando um prazo vencer em menos de 24h</p>
+                </div>
+                <div class="toggle on" data-key="notif_prazos"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Novos andamentos</h4>
+                  <p>Notificar quando um andamento for adicionado</p>
+                </div>
+                <div class="toggle on" data-key="notif_andamentos"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Audiências do dia</h4>
+                  <p>Lembrete diário de audiências agendadas</p>
+                </div>
+                <div class="toggle on" data-key="notif_audiencias"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Alertas financeiros</h3>
+            <div class="cfg-card">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Honorários em atraso</h4>
+                  <p>Notificar quando um honorário vencer sem pagamento</p>
+                </div>
+                <div class="toggle on" data-key="notif_honorarios"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Custas pendentes</h4>
+                  <p>Lembrete de custas não reembolsadas</p>
+                </div>
+                <div class="toggle" data-key="notif_custas"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Canal de notificação</h3>
+            <div class="cfg-card">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Notificações no sistema</h4>
+                  <p>Alertas aparecem no sino do topo</p>
+                </div>
+                <div class="toggle on" data-key="notif_sistema"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Notificações por e-mail</h4>
+                  <p>Receber resumo diário no e-mail cadastrado</p>
+                </div>
+                <div class="toggle" data-key="notif_email"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PREFERÊNCIAS -->
+        <div class="cfg-pane" id="pane-preferencias">
+
+          <div class="cfg-section">
+            <h3>Interface</h3>
+            <div class="cfg-card">
+              <div class="field-row">
+                <span class="field-label">Idioma</span>
+                <select class="field-select" id="f-idioma">
+                  <option value="pt-BR" selected>Português (BR)</option>
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Fuso horário</span>
+                <select class="field-select" id="f-timezone">
+                  <option value="America/Sao_Paulo" selected>América/São Paulo (UTC-3)</option>
+                  <option value="America/Manaus">América/Manaus (UTC-4)</option>
+                  <option value="America/Belem">América/Belém (UTC-3)</option>
+                  <option value="America/Fortaleza">América/Fortaleza (UTC-3)</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Formato de data</span>
+                <select class="field-select" id="f-dateformat">
+                  <option value="DD/MM/YYYY" selected>DD/MM/AAAA</option>
+                  <option value="MM/DD/YYYY">MM/DD/AAAA</option>
+                  <option value="YYYY-MM-DD">AAAA-MM-DD</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Dashboard</h3>
+            <div class="cfg-card">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Mostrar processos urgentes primeiro</h4>
+                  <p>Ordena a lista por urgência automaticamente</p>
+                </div>
+                <div class="toggle on" data-key="pref_urgentes"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>Exibir painel de equipe</h4>
+                  <p>Mostrar o painel de membros no dashboard</p>
+                </div>
+                <div class="toggle on" data-key="pref_equipe"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cfg-section">
+            <h3>Zona de perigo</h3>
+            <div class="cfg-card">
+              <div class="field-row">
+                <div>
+                  <div class="danger-title">Excluir conta</div>
+                  <div class="danger-sub">Remove permanentemente todos os dados do escritório</div>
+                </div>
+                <button class="btn-danger-action" id="btn-excluir-conta">Excluir conta</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SENHA -->
+  <div class="modal-overlay" id="modal-senha">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Alterar senha</h3>
+        <button class="modal-close" id="modal-senha-close">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Senha atual</label>
+          <input type="password" id="f-senha-atual" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Nova senha</label>
+          <input type="password" id="f-senha-nova" placeholder="Mínimo 8 caracteres" />
+        </div>
+        <div class="form-group">
+          <label>Confirmar nova senha</label>
+          <input type="password" id="f-senha-conf" placeholder="Repita a nova senha" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="modal-senha-cancel">Cancelar</button>
+        <button class="btn btn--primary" id="modal-senha-save">Salvar senha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONVIDAR MEMBRO -->
+  <div class="modal-overlay" id="modal-convite">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Convidar membro</h3>
+        <button class="modal-close" id="modal-convite-close">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome completo</label>
+          <input type="text" id="f-convite-nome" placeholder="Nome do membro" />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="f-convite-email" placeholder="email@exemplo.com" />
+        </div>
+        <div class="form-group">
+          <label>Cargo / Função</label>
+          <select id="f-convite-cargo">
+            <option value="Advogado">Advogado</option>
+            <option value="Advogada">Advogada</option>
+            <option value="Estagiário">Estagiário</option>
+            <option value="Estagiária">Estagiária</option>
+            <option value="Secretário">Secretário(a)</option>
+            <option value="Admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="modal-convite-cancel">Cancelar</button>
+        <button class="btn btn--primary" id="modal-convite-save">Enviar convite</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/store.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/confirm.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/clientes-data.js"></script>
+  <script src="../js/configuracoes.js"></script>
+  <script src="../js/responsive.js"></script>
+</body>
+</html>

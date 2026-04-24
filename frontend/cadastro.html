@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NS Advocacia — Cadastro</title>
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 40px;
+      justify-content: center;
+      background: var(--bg, #f7f6f2);
+      font-family: 'DM Sans', sans-serif;
+      padding: 40px 24px;
+    }
+
+    .cadastro-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    }
+
+    .cadastro-logo {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .cadastro-logo h1 {
+      font-family: 'Lora', serif;
+      font-size: 2rem;
+      color: var(--primary, #2d5a3d);
+      margin: 0;
+    }
+
+    .cadastro-logo p {
+      font-size: 0.85rem;
+      color: #888;
+      margin: 4px 0 0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .secao-titulo {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 14px 0 8px;
+    }
+
+    .secao-titulo:first-of-type {
+      margin-top: 0;
+    }
+
+    .divisor {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 14px 0;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .form-group label span {
+      color: #aaa;
+      font-weight: 400;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      outline: none;
+      background: #fff;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary, #2d5a3d);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-cadastrar {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary, #2d5a3d);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-cadastrar:hover { opacity: 0.9; }
+    .btn-cadastrar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.87rem;
+      color: #888;
+    }
+
+    .login-link a {
+      color: var(--primary, #2d5a3d);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-link a:hover { text-decoration: underline; }
+
+    .erro {
+      background: #fef2f2;
+      color: #c0392b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .erro.visivel { display: block; }
+
+    .sucesso {
+      background: #f0faf4;
+      color: #2d5a3d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .sucesso.visivel { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="cadastro-card">
+    <div class="cadastro-logo">
+      <h1>NS</h1>
+      <p>Advocacia</p>
+    </div>
+
+    <div class="erro" id="cadastro-erro"></div>
+    <div class="sucesso" id="cadastro-sucesso"></div>
+
+    <p class="secao-titulo">Dados do Escritório</p>
+
+    <div class="form-group">
+      <label>Nome do Escritório</label>
+      <input type="text" id="nome-escritorio" placeholder="Ex: Silva & Nascimento Advocacia" />
+    </div>
+
+    <div class="divisor"></div>
+
+    <p class="secao-titulo">Dados do Responsável</p>
+
+    <div class="form-group">
+      <label>Nome Completo</label>
+      <input type="text" id="nome" placeholder="Dr(a). Nome Sobrenome" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="email" placeholder="seu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>OAB <span>(opcional)</span></label>
+        <input type="text" id="oab" placeholder="OAB/CE 12345" />
+      </div>
+    </div>
+
+    <div class="divisor"></div>
+
+    <p class="secao-titulo">Senha de Acesso</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" />
+      </div>
+      <div class="form-group">
+        <label>Confirmar Senha</label>
+        <input type="password" id="senha-confirm" placeholder="Repita a senha" />
+      </div>
+    </div>
+
+    <button class="btn-cadastrar" id="btn-cadastrar">Criar conta</button>
+
+    <div class="login-link">
+      Já tem conta? <a href="login.html">Entrar</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+
+    async function fazerCadastro() {
+      const nomeEscritorio = document.getElementById('nome-escritorio').value.trim();
+      const nome           = document.getElementById('nome').value.trim();
+      const email          = document.getElementById('email').value.trim();
+      const oab            = document.getElementById('oab').value.trim();
+      const senha          = document.getElementById('senha').value;
+      const senhaConfirm   = document.getElementById('senha-confirm').value;
+
+      const erro   = document.getElementById('cadastro-erro');
+      const sucesso = document.getElementById('cadastro-sucesso');
+      const btn    = document.getElementById('btn-cadastrar');
+
+      erro.classList.remove('visivel');
+      sucesso.classList.remove('visivel');
+
+      // Validações
+      if (!nomeEscritorio || !nome || !email || !senha) {
+        erro.textContent = 'Preencha todos os campos obrigatórios.';
+        erro.classList.add('visivel');
+        return;
+      }
+
+      if (senha.length < 6) {
+        erro.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        erro.classList.add('visivel');
+        return;
+      }
+
+      if (senha !== senhaConfirm) {
+        erro.textContent = 'As senhas não coincidem.';
+        erro.classList.add('visivel');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Criando conta...';
+
+      try {
+        const dados = await Api.post('/auth/register', {
+          nomeEscritorio,
+          nome,
+          email,
+          oab: oab || undefined,
+          senha
+        });
+
+        if (dados) {
+          // Salva a sessão e redireciona
+          localStorage.setItem('ns_token', dados.token);
+          localStorage.setItem('ns_usuario', JSON.stringify(dados.usuario));
+
+          sucesso.textContent = 'Conta criada com sucesso! Redirecionando...';
+          sucesso.classList.add('visivel');
+
+          setTimeout(() => {
+          }, 1500);
+        }
+      } catch (err) {
+        erro.textContent = err.message || 'Erro ao criar conta. Tente novamente.';
+        erro.classList.add('visivel');
+        btn.disabled = false;
+        btn.textContent = 'Criar conta';
+      }
+    }
+
+    document.getElementById('btn-cadastrar').addEventListener('click', fazerCadastro);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') fazerCadastro();
+    });
+  </script>
+
+</body>
+</html>
