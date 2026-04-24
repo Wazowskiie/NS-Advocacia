@@ -127,7 +127,7 @@ function limparModal() {
     if (el) el.value = '';
   });
   document.getElementById('f-tipo').value      = 'audiencia';
-  document.getElementById('f-resp-modal').value = 'Rafael Silva';
+  // responsavel preenchido via API;
   document.getElementById('f-hora-ini').value  = '09:00';
   document.getElementById('f-hora-fim').value  = '10:00';
 }

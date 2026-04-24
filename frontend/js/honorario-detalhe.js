@@ -16,7 +16,7 @@ function init() {
   }
 
   document.getElementById('breadcrumb-titulo').textContent = hon.processo;
-  document.title = `LexDesk — ${hon.processo}`;
+  document.title = `NS Advocacia — ${hon.processo}`;
   document.getElementById('hero-titulo').textContent = hon.processo;
   document.getElementById('hero-sub').textContent    = `${hon.num} · ${hon.cliente}`;
 

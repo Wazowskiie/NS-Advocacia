@@ -1,5 +1,5 @@
 // ============================================================
-// LexDesk — Modal de confirmação reutilizável
+// NS Advocacia — Modal de confirmação reutilizável
 // Uso: Confirm.show('Tem certeza?', 'Descrição', () => acao())
 // ============================================================
 

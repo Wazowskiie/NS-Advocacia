@@ -19,15 +19,11 @@ const tipoCor = {
 // Andamentos mockados por processo
 const andamentosData = {
   1: [
-    { id:1, titulo:'Prazo de contestação — vence hoje', desc:'Prazo final para apresentação da contestação e documentos probatórios.', data:'Hoje, 18h', resp:'Rafael Silva', tipo:'prazo' },
-    { id:2, titulo:'Audiência de conciliação realizada', desc:'Audiência realizada. Proposta de R$ 18.000 recusada pela reclamante.', data:'15/03/2024', resp:'Rafael Silva', tipo:'audiencia' },
-    { id:3, titulo:'Petição inicial protocolada', desc:'Petição distribuída com pedidos de horas extras, FGTS e aviso prévio.', data:'12/01/2024', resp:'Rafael Silva', tipo:'peticao' },
   ],
 };
 
 const documentosData = {
   1: [
-    { nome:'Petição inicial',      tipo:'PDF', tamanho:'245 KB', data:'12/01/2024' },
     { nome:'Procuração ad judicia', tipo:'PDF', tamanho:'180 KB', data:'10/01/2024' },
     { nome:'Ata de audiência',     tipo:'PDF', tamanho:'98 KB',  data:'15/03/2024' },
   ],
@@ -42,7 +38,7 @@ function init() {
 
   // Breadcrumb
   document.getElementById('breadcrumb-titulo').textContent = proc.tipo;
-  document.title = `LexDesk — ${proc.tipo}`;
+  document.title = `NS Advocacia — ${proc.tipo}`;
 
   // Hero
   document.getElementById('hero-tipo').textContent = proc.tipo;

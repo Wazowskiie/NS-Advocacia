@@ -1,5 +1,5 @@
 // ============================================================
-// LexDesk — Toast de feedback visual
+// NS Advocacia — Toast de feedback visual
 // Uso: Toast.show('Processo salvo!', 'success')
 //      Toast.show('Erro ao salvar.', 'error')
 //      Toast.show('Honorário atualizado.', 'info')

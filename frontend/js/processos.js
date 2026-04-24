@@ -211,7 +211,7 @@ function limparModal() {
     if (el) el.value = "";
   });
   document.getElementById("f-status-modal").value = "Em andamento";
-  document.getElementById("f-resp-modal").value = "Rafael Silva";
+  // responsavel preenchido via API;
 }
 
 function salvarProcesso() {

@@ -22,7 +22,7 @@ function init() {
   }
 
   document.getElementById('breadcrumb-nome').textContent = cli.nome;
-  document.title = `LexDesk — ${cli.nome}`;
+  document.title = `NS Advocacia — ${cli.nome}`;
 
   const av = document.getElementById('hero-avatar');
   av.textContent = cli.iniciais;

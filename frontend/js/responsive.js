@@ -1,5 +1,5 @@
 // ============================================================
-// LexDesk — Responsivo
+// NS Advocacia — Responsivo
 // Injeta barra inferior mobile e botão hamburguer no tablet
 // ============================================================
 

@@ -1,13 +1,13 @@
 // ============================================================
-// LexDesk — Notificações de prazos urgentes
+// NS Advocacia — Notificações de prazos urgentes
 // Lê os processos do localStorage ou usa dados mock
 // ============================================================
 
 const Notifications = (() => {
   // Processos urgentes — em produção viria do store/API
   const urgentes = [
-    { id: 1, titulo: 'Prazo: Ação Trabalhista',    sub: 'Maria Fernanda Costa',  tempo: 'Hoje, 18h',  tipo: 'prazo'     },
-    { id: 2, titulo: 'Audiência — TRT 2ª Região',  sub: 'Maria Fernanda Costa',  tempo: 'Hoje, 9h',   tipo: 'audiencia' },
+    
+    
     { id: 3, titulo: 'Honorário em atraso',         sub: 'Farmácia Bela Saúde',   tempo: 'Desde 05/03', tipo: 'financeiro'},
     { id: 4, titulo: 'Prazo: Rescisão Contratual', sub: 'Farmácia Bela Saúde',   tempo: 'Hoje, 12h',  tipo: 'prazo'     },
   ];
