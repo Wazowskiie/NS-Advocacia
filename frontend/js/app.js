@@ -34,3 +34,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.addEventListener('click', Auth.logout);
 });
+
+// Preenche sidebar com dados do usuário logado
+const usuario = Auth.getUsuario();
+if (usuario) {
+  const iniciais = usuario.nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const el = document.getElementById('sidebar-avatar');
+  const elNome = document.getElementById('sidebar-nome');
+  const elCargo = document.getElementById('sidebar-cargo');
+  const elGreeting = document.querySelector('.topbar__greeting em');
+  if (el) el.textContent = iniciais;
+  if (elNome) elNome.textContent = usuario.nome;
+  if (elCargo) elCargo.textContent = usuario.cargo || 'Advogado';
+  if (elGreeting) elGreeting.textContent = usuario.nome.split(' ')[0];
+}
