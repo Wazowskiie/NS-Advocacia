@@ -136,9 +136,7 @@
   <script>
     // Se já estiver logado, vai direto pro dashboard
     console.log('estaLogado:', Auth.estaLogado(), 'token:', localStorage.getItem('ns_token'));
-    if (Auth.estaLogado()) {
-      window.location.href = 'index.html';
-    }
+    // redirect desativado temporariamente
 
     async function fazerLogin() {
       const email = document.getElementById('login-email').value.trim();
@@ -160,7 +158,7 @@
       try {
         const resultado = await Auth.login(email, senha);
         if (!resultado) throw new Error('Credenciais invalidas.');
-        window.location.href = 'index.html';
+        console.log('LOGIN OK, token:', localStorage.getItem('ns_token'));
       } catch (err) {
         erro.textContent = err.message || 'E-mail ou senha incorretos.';
         erro.classList.add('visivel');
