@@ -135,6 +135,7 @@
   <script src="js/auth.js"></script>
   <script>
     // Se já estiver logado, vai direto pro dashboard
+    console.log('estaLogado:', Auth.estaLogado(), 'token:', localStorage.getItem('ns_token'));
     if (Auth.estaLogado()) {
       window.location.href = 'index.html';
     }
