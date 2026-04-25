@@ -38,11 +38,11 @@ const Store = (() => {
 
     // Badge da sidebar — processos
     const badgeSidebar = document.querySelector('.nav-item[data-page="processos"] .badge');
-    if (badgeSidebar) badgeSidebar.textContent = m.processosAtivos;
+    if (badgeSidebar) { if (m.processosAtivos > 0) { badgeSidebar.textContent = m.processosAtivos; badgeSidebar.style.display = "flex"; } else { badgeSidebar.style.display = "none"; } }
 
     // Badge da sidebar — agenda (prazos)
     const badgeAgenda = document.querySelector('.nav-item[data-page="agenda"] .badge');
-    if (badgeAgenda) badgeAgenda.textContent = m.prazosProximos;
+    if (badgeAgenda) { if (m.prazosProximos > 0) { badgeAgenda.textContent = m.prazosProximos; badgeAgenda.style.display = "flex"; } else { badgeAgenda.style.display = "none"; } }
 
     // Stat cards do dashboard
     const statNums = document.querySelectorAll('.stat-num');
