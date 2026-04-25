@@ -44,8 +44,8 @@ async function carregarEventos() {
         tipo:   e.tipo || 'REUNIAO',
         resp:   e.usuarioId || '',
         dia:    diaSemana,
-        hIni:   ini.getUTCHours() - 3 + ini.getUTCMinutes() / 60,
-        hFim:   fim2.getUTCHours() - 3 + fim2.getUTCMinutes() / 60,
+        hIni:   ini.getHours() + ini.getMinutes() / 60,
+        hFim:   fim2.getHours() + fim2.getMinutes() / 60,
       };
     });
   } catch (err) {
