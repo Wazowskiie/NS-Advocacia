@@ -44,8 +44,8 @@ async function carregarEventos() {
         tipo:   e.tipo || 'REUNIAO',
         resp:   e.usuarioId || '',
         dia:    diaSemana,
-        hIni:   ini.getHours() + ini.getMinutes() / 60,
-        hFim:   fim2.getHours() + fim2.getMinutes() / 60,
+        hIni:   ini.getUTCHours() + ini.getUTCMinutes() / 60,
+        hFim:   fim2.getUTCHours() + fim2.getUTCMinutes() / 60,
       };
     });
   } catch (err) {
@@ -173,8 +173,8 @@ async function salvarEvento() {
     return;
   }
 
-  const dataInicio = `${data}T${horaIni}:00-03:00`;
-  const dataFim    = `${data}T${horaFim}:00-03:00`;
+  const dataInicio = `${data}T${horaIni}:00`;
+  const dataFim    = `${data}T${horaFim}:00`;
 
   try {
     await Api.post('/eventos', { titulo, descricao: sub, tipo, dataInicio, dataFim });
