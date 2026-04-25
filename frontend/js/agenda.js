@@ -1,3 +1,15 @@
+const DIAS     = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MESES    = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const HOURS    = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+const HOUR_H   = 64;
+const tipoClass = {
+  AUDIENCIA:  'ev-audiencia',
+  REUNIAO:    'ev-reuniao',
+  PRAZO:      'ev-prazo',
+  DILIGENCIA: 'ev-tarefa',
+  OUTRO:      'ev-tarefa',
+};
+
 let weekOffset = 0;
 let eventosData = [];
 
@@ -29,7 +41,7 @@ async function carregarEventos() {
         id:     e.id,
         titulo: e.titulo,
         sub:    e.descricao || (e.processo ? e.processo.titulo : ''),
-        tipo:   e.tipo ? e.tipo.toLowerCase().replace(/ /g, '_') : 'reuniao_cliente',
+        tipo:   e.tipo || 'REUNIAO',
         resp:   e.usuarioId || '',
         dia:    diaSemana,
         hIni:   ini.getHours() + ini.getMinutes() / 60,
@@ -136,7 +148,7 @@ function limparModal() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('f-tipo').value     = 'audiencia';
+  document.getElementById('f-tipo').value     = 'AUDIENCIA';
   document.getElementById('f-hora-ini').value = '09:00';
   document.getElementById('f-hora-fim').value = '10:00';
 }
