@@ -27,7 +27,9 @@ const Api = (() => {
 
     // Token expirado — redireciona pro login
     if (res.status === 401) {
-      Auth.logout();
+      if (!path.includes('/auth/login')) {
+        Auth.logout();
+      }
       return null;
     }
 
