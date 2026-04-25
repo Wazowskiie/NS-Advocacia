@@ -135,9 +135,8 @@
   <script src="js/auth.js"></script>
   <script>
     // Se já estiver logado, vai direto pro dashboard
-    if (Auth.estaLogado()) {
-      window.location.href = 'index.html';
-    }
+    console.log('estaLogado:', Auth.estaLogado(), 'token:', localStorage.getItem('ns_token'));
+    // redirect desativado temporariamente
 
     async function fazerLogin() {
       const email = document.getElementById('login-email').value.trim();
@@ -157,8 +156,9 @@
       btn.textContent = 'Entrando...';
 
       try {
-        await Auth.login(email, senha);
-        window.location.href = 'index.html';
+        const resultado = await Auth.login(email, senha);
+        if (!resultado) throw new Error('Credenciais invalidas.');
+        console.log('LOGIN OK, token:', localStorage.getItem('ns_token'));
       } catch (err) {
         erro.textContent = err.message || 'E-mail ou senha incorretos.';
         erro.classList.add('visivel');
