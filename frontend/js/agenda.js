@@ -1,4 +1,3 @@
-const API = '/api';
 let weekOffset = 0;
 let eventosData = [];
 
@@ -21,8 +20,7 @@ async function carregarEventos() {
   const inicio = semana[0].toISOString().split('T')[0];
   const fim    = semana[6].toISOString().split('T')[0];
   try {
-    const res  = await fetch(`${API}/eventos?inicio=${inicio}&fim=${fim}`);
-    const data = await res.json();
+    const data = await Api.get(`/eventos?inicio=${inicio}&fim=${fim}`);
     eventosData = (data || []).map(e => {
       const ini  = new Date(e.dataInicio);
       const fim2 = e.dataFim ? new Date(e.dataFim) : new Date(ini.getTime() + 3600000);
@@ -167,16 +165,7 @@ async function salvarEvento() {
   const dataFim    = `${data}T${horaFim}:00`;
 
   try {
-    const res = await fetch(`${API}/eventos`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ titulo, descricao: sub, tipo, dataInicio, dataFim }),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      Toast.show(err.error || 'Erro ao salvar evento.', 'error');
-      return;
-    }
+    await Api.post('/eventos', { titulo, descricao: sub, tipo, dataInicio, dataFim });
     Toast.show('Evento criado com sucesso!', 'success');
     fecharModal();
     await carregarEventos();
