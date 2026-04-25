@@ -46,6 +46,10 @@
             <span class="badge badge--green">3</span>
           </a>
         </div>
+          <a href="pages/monitoramento.html" class="nav-item" data-page="monitoramento">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Monitoramento
+          </a>
 
         <div class="nav-section">
           <span class="nav-label">Financeiro</span>
@@ -158,40 +162,8 @@
                 <h3>Agenda de Hoje</h3>
                 <a href="pages/agenda.html" class="panel-link">Ver semana →</a>
               </div>
-              <div class="agenda-list">
-                <div class="agenda-item">
-                  <div class="agenda-time">
-                    <span class="agenda-time__hour">9</span>
-                    <span class="agenda-time__period">AM</span>
-                  </div>
-                  <div class="agenda-info">
-                    <h4>Audiência — TRT 2ª Região</h4>
-                    <p>Maria Fernanda Costa</p>
-                  </div>
-                  <span class="tag tag--hoje">Hoje</span>
-                </div>
-                <div class="agenda-item">
-                  <div class="agenda-time">
-                    <span class="agenda-time__hour">14</span>
-                    <span class="agenda-time__period">PM</span>
-                  </div>
-                  <div class="agenda-info">
-                    <h4>Reunião com cliente</h4>
-                    <p>Construtora Viva S.A.</p>
-                  </div>
-                  <span class="tag tag--escrit">Escrit.</span>
-                </div>
-                <div class="agenda-item">
-                  <div class="agenda-time">
-                    <span class="agenda-time__hour">16</span>
-                    <span class="agenda-time__period">PM</span>
-                  </div>
-                  <div class="agenda-info">
-                    <h4>Protocolo de petição</h4>
-                    <p>Ação Trabalhista #0012345</p>
-                  </div>
-                  <span class="tag tag--digital">Digital</span>
-                </div>
+              <div class="agenda-list" id="dashboard-agenda-list">
+                <p style="color:#aaa;text-align:center;padding:16px;">Nenhum evento hoje.</p>
               </div>
               <div class="panel-footer panel-footer--single">
                 <button class="btn btn--primary" onclick="window.location.href='pages/agenda.html'">+ Novo evento</button>
