@@ -26,17 +26,20 @@ const Api = (() => {
     const res = await fetch(`${API_URL}${path}`, options);
 
     // Token expirado — redireciona pro login
-    if (res.status === 401) {
-      Auth.logout();
-      return null;
-    }
+if (res.status === 401) {
+  if (getToken()) {
+    Auth.logout();
+    return null;
+  }
+  throw new Error('E-mail ou senha incorretos.');
+}
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || 'Erro na requisição');
-    }
+if (!res.ok) {
+  const err = await res.json().catch(() => ({}));
+  throw new Error(err.error || 'Erro na requisição');
+}
 
-    return res.json();
+return res.json();
   }
 
   return {
