@@ -157,7 +157,8 @@
       btn.textContent = 'Entrando...';
 
       try {
-        await Auth.login(email, senha);
+        const resultado = await Auth.login(email, senha);
+        if (!resultado) throw new Error('Credenciais invalidas.');
         window.location.href = 'index.html';
       } catch (err) {
         erro.textContent = err.message || 'E-mail ou senha incorretos.';
