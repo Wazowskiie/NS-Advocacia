@@ -21,12 +21,10 @@ function renderTabela(lista) {
 
   tbody.innerHTML = `<div class="proc-tbody-scroll">${lista.map(p => rowHTML(p)).join("")}</div>`;
 
-  // Bind cliques nas linhas
   tbody.querySelectorAll(".proc-row").forEach(row => {
     row.addEventListener("click", () => abrirPainel(Number(row.dataset.id)));
   });
 
-  // Bind botões "Ver"
   tbody.querySelectorAll(".btn-ver").forEach(btn => {
     btn.addEventListener("click", e => {
       e.stopPropagation();
@@ -46,7 +44,6 @@ function renderTabela(lista) {
         () => {
           const idx = processosData.findIndex(p => p.id === id);
           if (idx > -1) processosData.splice(idx, 1);
-          // Atualiza badge
           const badge = document.getElementById('badge-processos');
           if (badge) badge.textContent = processosData.length;
           Toast.show('Processo excluído.', 'warning');
@@ -61,16 +58,14 @@ function renderTabela(lista) {
 }
 
 function rowHTML(p) {
-  const s = statusMap[p.status];
+  const s = statusMap[p.status] || { cls: 'pill--progress', label: p.status };
   const numCurto = p.num.length > 18 ? p.num.substring(0, 18) + "…" : p.num;
   return `
     <div class="proc-row${selectedId === p.id ? " selected" : ""}" data-id="${p.id}">
-      <div>
-        <div class="proc-num-main">${numCurto}</div>
-      </div>
+      <div><div class="proc-num-main">${numCurto}</div></div>
       <div class="proc-cell">${p.tipo}</div>
       <div class="proc-cell">${p.cliente}</div>
-      <div class="proc-cell">${p.resp.split(" ")[0]}</div>
+      <div class="proc-cell">${p.resp ? p.resp.split(" ")[0] : '—'}</div>
       <div><span class="status-pill ${s.cls}">${s.label}</span></div>
       <div class="proc-prazo${p.prazoUrgente ? " proc-prazo--urgent" : ""}">${p.prazo}</div>
       <div class="proc-vara">${p.vara}</div>
@@ -82,7 +77,7 @@ function rowHTML(p) {
 function abrirPainel(id) {
   selectedId = id;
   const p = processosData.find(x => x.id === id);
-  const s = statusMap[p.status];
+  const s = statusMap[p.status] || { cls: 'pill--progress', label: p.status };
 
   document.getElementById("sp-empty").style.display = "none";
 
@@ -95,50 +90,25 @@ function abrirPainel(id) {
         <span class="status-pill ${s.cls}">${s.label}</span>
       </div>
     </div>
-
     <div class="sp-section">
       <h4>Dados do Processo</h4>
-      <div class="sp-row">
-        <span class="sp-label">Número</span>
-        <span class="sp-value sp-value--num">${p.num}</span>
-      </div>
-      <div class="sp-row">
-        <span class="sp-label">Ajuizamento</span>
-        <span class="sp-value">${p.ajuizamento}</span>
-      </div>
-      <div class="sp-row">
-        <span class="sp-label">Vara / Tribunal</span>
-        <span class="sp-value">${p.vara}</span>
-      </div>
-      <div class="sp-row">
-        <span class="sp-label">Fase</span>
-        <span class="sp-value">${p.fase}</span>
-      </div>
+      <div class="sp-row"><span class="sp-label">Número</span><span class="sp-value sp-value--num">${p.num}</span></div>
+      <div class="sp-row"><span class="sp-label">Ajuizamento</span><span class="sp-value">${p.ajuizamento}</span></div>
+      <div class="sp-row"><span class="sp-label">Vara / Tribunal</span><span class="sp-value">${p.vara}</span></div>
+      <div class="sp-row"><span class="sp-label">Fase</span><span class="sp-value">${p.fase}</span></div>
     </div>
-
     <div class="sp-section">
       <h4>Responsável & Financeiro</h4>
-      <div class="sp-row">
-        <span class="sp-label">Responsável</span>
-        <span class="sp-value">${p.resp}</span>
-      </div>
-      <div class="sp-row">
-        <span class="sp-label">Prazo</span>
-        <span class="sp-value${p.prazoUrgente ? " sp-value--urgent" : ""}">${p.prazo}</span>
-      </div>
-      <div class="sp-row">
-        <span class="sp-label">Valor da Causa</span>
-        <span class="sp-value">${p.valor}</span>
-      </div>
+      <div class="sp-row"><span class="sp-label">Responsável</span><span class="sp-value">${p.resp}</span></div>
+      <div class="sp-row"><span class="sp-label">Prazo</span><span class="sp-value${p.prazoUrgente ? " sp-value--urgent" : ""}">${p.prazo}</span></div>
+      <div class="sp-row"><span class="sp-label">Valor da Causa</span><span class="sp-value">${p.valor}</span></div>
     </div>
-
     <div class="sp-actions">
-      <button class="btn btn--primary">Abrir processo completo</button>
+      <button class="btn btn--primary" onclick="window.location.href='processo-detalhe.html?id=${p.id}'">Abrir processo completo</button>
       <button class="btn btn--secondary">Adicionar andamento</button>
     </div>
   `;
 
-  // Atualiza seleção visual na tabela
   aplicarFiltros();
 }
 
@@ -212,12 +182,13 @@ function limparModal() {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
-  document.getElementById("f-status-modal").value = "Em andamento";
+  const statusModal = document.getElementById("f-status-modal");
+  if (statusModal) statusModal.value = "Em andamento";
 }
 
-function salvarProcesso() {
+async function salvarProcesso() {
   const tipo     = document.getElementById("f-tipo").value.trim();
-  const num      = document.getElementById("f-numero").value.trim();
+  const numero   = document.getElementById("f-numero").value.trim();
   const cliente  = document.getElementById("f-cliente").value.trim();
   const resp     = document.getElementById("f-resp-modal").value;
   const status   = document.getElementById("f-status-modal").value;
@@ -225,34 +196,53 @@ function salvarProcesso() {
   const valor    = document.getElementById("f-valor").value.trim();
   const prazoRaw = document.getElementById("f-prazo-modal").value;
 
-  // Validação
   if (!tipo || !cliente) {
     Toast.show('Preencha o Tipo de Ação e o Cliente.', 'error');
     return;
   }
 
-  let prazo = "—";
-  if (prazoRaw) {
-    const [, m, d] = prazoRaw.split("-");
-    const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-    prazo = `${Number(d)} ${meses[Number(m) - 1]}`;
+  btnSave.disabled = true;
+  btnSave.textContent = 'Salvando...';
+
+  try {
+    const payload = {
+      titulo:          tipo,
+      numero:          numero   || undefined,
+      vara:            vara     || undefined,
+      valorCausa:      valor    ? Number(valor.replace(/\D/g, '')) : undefined,
+      status:          _mapStatusParaBackend(status),
+      prazo:           prazoRaw || undefined,
+      clienteNome:     cliente,
+      responsavelNome: resp,
+    };
+
+    const criado = await criarProcessoAPI(payload);
+
+    if (criado) {
+      // Recarrega do backend para garantir consistência
+      await carregarProcessosData();
+      aplicarFiltros();
+      Toast.show('Processo salvo com sucesso!', 'success');
+      fecharModal();
+    } else {
+      Toast.show('Erro ao salvar. Tente novamente.', 'error');
+    }
+  } catch (err) {
+    console.error('Erro ao salvar processo:', err);
+    Toast.show('Erro ao salvar. Verifique os dados.', 'error');
+  } finally {
+    btnSave.disabled = false;
+    btnSave.textContent = 'Salvar Processo';
   }
+}
 
-  const novoId = processosData.length ? Math.max(...processosData.map(p => p.id)) + 1 : 1;
-  processosData.unshift({
-    id: novoId, num: num || "—", tipo, cliente, resp, status,
-    prazo, prazoUrgente: false, vara: vara || "—",
-    valor: valor || "—", fase: "Inicial",
-    ajuizamento: new Date().toLocaleDateString("pt-BR"),
-  });
-
-  // Atualiza badge da sidebar
-  const badge = document.getElementById('badge-processos');
-  if (badge) badge.textContent = processosData.length;
-
-  Toast.show('Processo salvo com sucesso!', 'success');
-  fecharModal();
-  aplicarFiltros();
+function _mapStatusParaBackend(status) {
+  const map = {
+    'Em andamento': 'ATIVO',
+    'Aguardando':   'SUSPENSO',
+    'Urgente':      'ATIVO',
+  };
+  return map[status] || 'ATIVO';
 }
 
 btnNovo.addEventListener("click", abrirModal);
@@ -268,9 +258,10 @@ document.getElementById("f-responsavel").addEventListener("change", aplicarFiltr
 document.getElementById("f-prazo").addEventListener("change", aplicarFiltros);
 
 // ---------- INIT ----------
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await carregarProcessosData();
   aplicarFiltros();
-  // Inicializa notificações só se o módulo estiver disponível
+
   if (typeof Notifications !== 'undefined') {
     Notifications.init('btn-notificacoes');
   }
