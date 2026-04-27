@@ -35,24 +35,26 @@ function renderTabela(lista) {
   });
 
   tbody.querySelectorAll('.btn-excluir').forEach(btn => {
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    const id = Number(btn.dataset.id);
-    const proc = processosData.find(p => p.id === id);
-    if (!proc) return;
-    Confirm.show(
-      'Excluir processo?',
-      `O processo "${proc.tipo}" de ${proc.cliente} será removido permanentemente.`,
-      () => {
-        const idx = processosData.findIndex(p => p.id === id);
-        if (idx > -1) processosData.splice(idx, 1);
-        Store.decrement('processos');
-        Toast.show('Processo excluído.', 'warning');
-        aplicarFiltros();
-      }
-    );
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = Number(btn.dataset.id);
+      const proc = processosData.find(p => p.id === id);
+      if (!proc) return;
+      Confirm.show(
+        'Excluir processo?',
+        `O processo "${proc.tipo}" de ${proc.cliente} será removido permanentemente.`,
+        () => {
+          const idx = processosData.findIndex(p => p.id === id);
+          if (idx > -1) processosData.splice(idx, 1);
+          // Atualiza badge
+          const badge = document.getElementById('badge-processos');
+          if (badge) badge.textContent = processosData.length;
+          Toast.show('Processo excluído.', 'warning');
+          aplicarFiltros();
+        }
+      );
+    });
   });
-});
 
   const n = lista.length;
   count.textContent = `${n} processo${n !== 1 ? "s" : ""} encontrado${n !== 1 ? "s" : ""}`;
@@ -211,24 +213,21 @@ function limparModal() {
     if (el) el.value = "";
   });
   document.getElementById("f-status-modal").value = "Em andamento";
-  // responsavel preenchido via API;
 }
 
 function salvarProcesso() {
-  const tipo   = document.getElementById("f-tipo").value.trim();
-  const num    = document.getElementById("f-numero").value.trim();
-  const cliente = document.getElementById("f-cliente").value.trim();
-  const resp   = document.getElementById("f-resp-modal").value;
-  const status = document.getElementById("f-status-modal").value;
-  const vara   = document.getElementById("f-vara").value.trim();
-  const valor  = document.getElementById("f-valor").value.trim();
+  const tipo     = document.getElementById("f-tipo").value.trim();
+  const num      = document.getElementById("f-numero").value.trim();
+  const cliente  = document.getElementById("f-cliente").value.trim();
+  const resp     = document.getElementById("f-resp-modal").value;
+  const status   = document.getElementById("f-status-modal").value;
+  const vara     = document.getElementById("f-vara").value.trim();
+  const valor    = document.getElementById("f-valor").value.trim();
   const prazoRaw = document.getElementById("f-prazo-modal").value;
 
+  // Validação
   if (!tipo || !cliente) {
     Toast.show('Preencha o Tipo de Ação e o Cliente.', 'error');
-
-    // Após salvar com sucesso, antes do fecharModal():
-    Toast.show('Processo salvo com sucesso!', 'success');
     return;
   }
 
@@ -247,14 +246,11 @@ function salvarProcesso() {
     ajuizamento: new Date().toLocaleDateString("pt-BR"),
   });
 
-  Store.increment('processos');
-// Atualiza badge da sidebar
-const badge = document.getElementById('badge-processos');
-if (badge) badge.textContent = Store.get('processos');
+  // Atualiza badge da sidebar
+  const badge = document.getElementById('badge-processos');
+  if (badge) badge.textContent = processosData.length;
 
-Toast.show('Processo salvo com sucesso!', 'success');
-
-  document.getElementById("badge-processos").textContent = processosData.length;
+  Toast.show('Processo salvo com sucesso!', 'success');
   fecharModal();
   aplicarFiltros();
 }
@@ -272,5 +268,10 @@ document.getElementById("f-responsavel").addEventListener("change", aplicarFiltr
 document.getElementById("f-prazo").addEventListener("change", aplicarFiltros);
 
 // ---------- INIT ----------
-document.addEventListener("DOMContentLoaded", () => aplicarFiltros())
-Notifications.init('btn-notificacoes');
+document.addEventListener("DOMContentLoaded", () => {
+  aplicarFiltros();
+  // Inicializa notificações só se o módulo estiver disponível
+  if (typeof Notifications !== 'undefined') {
+    Notifications.init('btn-notificacoes');
+  }
+});
