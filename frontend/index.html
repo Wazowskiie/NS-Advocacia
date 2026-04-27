@@ -14,6 +14,108 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Dropdown de Perfil ── */
+    .topbar__right {
+      position: relative;
+    }
+
+    .perfil-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: var(--bg-card, #fff);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+      min-width: 220px;
+      z-index: 999;
+      display: none;
+      overflow: hidden;
+      animation: dropdownIn .15s ease;
+    }
+
+    .perfil-dropdown.open {
+      display: block;
+    }
+
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .perfil-dropdown__header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border, #e5e7eb);
+      background: var(--bg-subtle, #fafafa);
+    }
+
+    .perfil-dropdown__avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--color-primary, #1a1a2e);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: .85rem;
+      margin-bottom: 8px;
+    }
+
+    .perfil-dropdown__name {
+      font-weight: 600;
+      font-size: .9rem;
+      color: var(--text, #1a1a1a);
+    }
+
+    .perfil-dropdown__email {
+      font-size: .78rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .perfil-dropdown__item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: .88rem;
+      color: var(--text, #1a1a1a);
+      transition: background .15s;
+      text-decoration: none;
+    }
+
+    .perfil-dropdown__item:hover {
+      background: var(--bg-hover, #f5f5f5);
+    }
+
+    .perfil-dropdown__item svg {
+      flex-shrink: 0;
+      opacity: .7;
+    }
+
+    .perfil-dropdown__divider {
+      height: 1px;
+      background: var(--border, #e5e7eb);
+      margin: 4px 0;
+    }
+
+    .perfil-dropdown__item--danger {
+      color: #e53e3e;
+    }
+
+    .perfil-dropdown__item--danger:hover {
+      background: #fff5f5;
+    }
+
+    .perfil-dropdown__item--danger svg {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -92,9 +194,32 @@
           <button class="icon-btn" id="btn-notificacoes" title="Notificações">
             <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           </button>
-          <button class="icon-btn" title="Perfil">
+
+          <!-- Botão de perfil + dropdown -->
+          <button class="icon-btn" id="btn-perfil" title="Perfil">
             <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           </button>
+
+          <div class="perfil-dropdown" id="perfil-dropdown">
+            <div class="perfil-dropdown__header">
+              <div class="perfil-dropdown__avatar" id="dd-avatar">?</div>
+              <div class="perfil-dropdown__name" id="dd-nome">Carregando...</div>
+              <div class="perfil-dropdown__email" id="dd-email"></div>
+            </div>
+            <a href="pages/configuracoes.html" class="perfil-dropdown__item">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>
+              Configurações
+            </a>
+            <a href="pages/configuracoes.html" class="perfil-dropdown__item">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              Meu Perfil
+            </a>
+            <div class="perfil-dropdown__divider"></div>
+            <div class="perfil-dropdown__item perfil-dropdown__item--danger" id="dd-logout">
+              <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </div>
+          </div>
         </div>
       </header>
 
@@ -105,7 +230,6 @@
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            
             <div class="stat-num">47</div>
             <div class="stat-label">Processos ativos</div>
           </div>
@@ -113,7 +237,6 @@
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
-            
             <div class="stat-num">12</div>
             <div class="stat-label">Prazos esta semana</div>
           </div>
@@ -121,7 +244,6 @@
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
             </div>
-            
             <div class="stat-num">34</div>
             <div class="stat-label">Clientes ativos</div>
           </div>
@@ -240,7 +362,61 @@
   <script src="js/notifications.js"></script>
   <script src="js/store.js"></script>
   <script src="js/responsive.js"></script>
-</body>
-</html>
+
+  <script>
+    // ── Dropdown de Perfil ──
+    const btnPerfil    = document.getElementById('btn-perfil');
+    const dropdown     = document.getElementById('perfil-dropdown');
+    const ddNome       = document.getElementById('dd-nome');
+    const ddEmail      = document.getElementById('dd-email');
+    const ddAvatar     = document.getElementById('dd-avatar');
+    const ddLogout     = document.getElementById('dd-logout');
+
+    // Abre/fecha o dropdown
+    btnPerfil.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+
+    // Fecha ao clicar fora
+    document.addEventListener('click', () => {
+      dropdown.classList.remove('open');
+    });
+
+    dropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Preenche os dados do usuário logado
+    function preencherDropdownPerfil() {
+      try {
+        const user = Auth.getUsuario ? Auth.getUsuario() : null;
+        if (user) {
+          const nome  = user.nome  || user.name  || 'Usuário';
+          const email = user.email || '';
+          const iniciais = nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+          ddNome.textContent   = nome;
+          ddEmail.textContent  = email;
+          ddAvatar.textContent = iniciais;
+        }
+      } catch (e) {
+        // Se Auth ainda não carregou, mantém "Carregando..."
+      }
+    }
+
+    // Logout
+    ddLogout.addEventListener('click', () => {
+      if (typeof Auth !== 'undefined' && Auth.logout) {
+        Auth.logout();
+      } else {
+        localStorage.removeItem('ns_token');
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Tenta preencher quando a página carregar
+    window.addEventListener('load', preencherDropdownPerfil);
+  </script>
 </body>
 </html>
