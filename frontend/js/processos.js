@@ -59,7 +59,7 @@ function renderTabela(lista) {
 
 function rowHTML(p) {
   const s = statusMap[p.status] || { cls: 'pill--progress', label: p.status };
-  const numCurto = p.num.length > 18 ? p.num.substring(0, 18) + "…" : p.num;
+  const numCurto = (p.num || '—').length > 18 ? p.num.substring(0, 18) + "…" : (p.num || '—');
   return `
     <div class="proc-row${selectedId === p.id ? " selected" : ""}" data-id="${p.id}">
       <div><div class="proc-num-main">${numCurto}</div></div>
@@ -120,7 +120,7 @@ function aplicarFiltros() {
   const prazo = document.getElementById("f-prazo").value;
 
   let lista = processosData.filter(p => {
-    if (q && !p.num.toLowerCase().includes(q) &&
+    if (q && !(p.num || '').toLowerCase().includes(q) &&
             !p.tipo.toLowerCase().includes(q) &&
             !p.cliente.toLowerCase().includes(q)) return false;
     if (st && p.status !== st) return false;
@@ -167,6 +167,23 @@ document.querySelectorAll(".proc-table-head span[data-col]").forEach(th => {
   });
 });
 
+// ---------- CARREGAR CLIENTES NO SELECT ----------
+async function carregarClientesSelect() {
+  const select = document.getElementById("f-cliente");
+  try {
+    const clientes = await Api.get('/clientes');
+    if (!clientes || !clientes.length) {
+      select.innerHTML = '<option value="">Nenhum cliente cadastrado</option>';
+      return;
+    }
+    select.innerHTML = '<option value="">Selecione um cliente</option>' +
+      clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  } catch (err) {
+    console.error('Erro ao carregar clientes:', err);
+    select.innerHTML = '<option value="">Erro ao carregar clientes</option>';
+  }
+}
+
 // ---------- MODAL NOVO PROCESSO ----------
 const overlay   = document.getElementById("modal-overlay");
 const btnNovo   = document.getElementById("btn-novo");
@@ -174,30 +191,52 @@ const btnClose  = document.getElementById("modal-close");
 const btnCancel = document.getElementById("modal-cancel");
 const btnSave   = document.getElementById("modal-save");
 
-function abrirModal()  { overlay.classList.add("active"); document.getElementById("f-tipo").focus(); }
-function fecharModal() { overlay.classList.remove("active"); limparModal(); }
+function abrirModal() {
+  overlay.classList.add("active");
+  document.getElementById("f-tipo").focus();
+}
+
+function fecharModal() {
+  overlay.classList.remove("active");
+  limparModal();
+}
 
 function limparModal() {
-  ["f-tipo","f-numero","f-cliente","f-vara","f-valor","f-prazo-modal"].forEach(id => {
+  ["f-tipo","f-numero","f-vara","f-valor","f-comarca","f-prazo-modal"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
+  const clienteSelect = document.getElementById("f-cliente");
+  if (clienteSelect) clienteSelect.value = "";
   const statusModal = document.getElementById("f-status-modal");
-  if (statusModal) statusModal.value = "Em andamento";
+  if (statusModal) statusModal.value = "ATIVO";
+  const areaModal = document.getElementById("f-area");
+  if (areaModal) areaModal.value = "TRABALHISTA";
 }
 
 async function salvarProcesso() {
-  const tipo     = document.getElementById("f-tipo").value.trim();
+  const titulo   = document.getElementById("f-tipo").value.trim();
   const numero   = document.getElementById("f-numero").value.trim();
-  const cliente  = document.getElementById("f-cliente").value.trim();
+  const clienteId = document.getElementById("f-cliente").value;
+  const area     = document.getElementById("f-area").value;
   const resp     = document.getElementById("f-resp-modal").value;
   const status   = document.getElementById("f-status-modal").value;
   const vara     = document.getElementById("f-vara").value.trim();
+  const comarca  = document.getElementById("f-comarca").value.trim();
   const valor    = document.getElementById("f-valor").value.trim();
-  const prazoRaw = document.getElementById("f-prazo-modal").value;
+  const prazo    = document.getElementById("f-prazo-modal").value;
 
-  if (!tipo || !cliente) {
-    Toast.show('Preencha o Tipo de Ação e o Cliente.', 'error');
+  // Validação
+  if (!titulo) {
+    Toast.show('Preencha o Tipo de Ação.', 'error');
+    return;
+  }
+  if (!clienteId) {
+    Toast.show('Selecione um cliente.', 'error');
+    return;
+  }
+  if (!area) {
+    Toast.show('Selecione a Área.', 'error');
     return;
   }
 
@@ -206,20 +245,20 @@ async function salvarProcesso() {
 
   try {
     const payload = {
-      titulo:          tipo,
-      numero:          numero   || undefined,
-      vara:            vara     || undefined,
-      valorCausa:      valor    ? Number(valor.replace(/\D/g, '')) : undefined,
-      status:          _mapStatusParaBackend(status),
-      prazo:           prazoRaw || undefined,
-      clienteNome:     cliente,
-      responsavelNome: resp,
+      titulo,
+      clienteId:   Number(clienteId),
+      area,
+      status,
+      numero:      numero  || undefined,
+      vara:        vara    || undefined,
+      comarca:     comarca || undefined,
+      valorCausa:  valor   ? Number(valor.replace(/\D/g, '')) : undefined,
+      prazo:       prazo   || undefined,
     };
 
     const criado = await criarProcessoAPI(payload);
 
     if (criado) {
-      // Recarrega do backend para garantir consistência
       await carregarProcessosData();
       aplicarFiltros();
       Toast.show('Processo salvo com sucesso!', 'success');
@@ -234,15 +273,6 @@ async function salvarProcesso() {
     btnSave.disabled = false;
     btnSave.textContent = 'Salvar Processo';
   }
-}
-
-function _mapStatusParaBackend(status) {
-  const map = {
-    'Em andamento': 'ATIVO',
-    'Aguardando':   'SUSPENSO',
-    'Urgente':      'ATIVO',
-  };
-  return map[status] || 'ATIVO';
 }
 
 btnNovo.addEventListener("click", abrirModal);
@@ -260,6 +290,7 @@ document.getElementById("f-prazo").addEventListener("change", aplicarFiltros);
 // ---------- INIT ----------
 document.addEventListener("DOMContentLoaded", async () => {
   await carregarProcessosData();
+  await carregarClientesSelect();
   aplicarFiltros();
 
   if (typeof Notifications !== 'undefined') {
