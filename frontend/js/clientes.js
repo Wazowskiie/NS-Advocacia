@@ -1,3 +1,7 @@
+// ============================================================
+// NS Advocacia — Clientes
+// ============================================================
+
 let selectedId = null;
 let sortCol = null;
 let sortDir = 1;
@@ -37,7 +41,7 @@ function renderTabela(lista) {
 
 function rowHTML(c) {
   const tipoKey = c.tipo === 'PESSOA_JURIDICA' ? 'PJ' : 'PF';
-  const t = tipoMap[tipoKey];
+  const t = tipoMap[tipoKey] || tipoMap['PF'];
   return `
     <div class="cli-row${selectedId === c.id ? " selected" : ""}" data-id="${c.id}">
       <div class="cli-identity">
@@ -59,10 +63,10 @@ function rowHTML(c) {
 // ---------- PAINEL LATERAL ----------
 function abrirPainel(id) {
   selectedId = id;
-  const c = clientesData.find(x => x.id === id);
+  const c = clientesData.find(x => String(x.id) === String(id));
   if (!c) return;
   const tipoKey = c.tipo === 'PESSOA_JURIDICA' ? 'PJ' : 'PF';
-  const t = tipoMap[tipoKey];
+  const t = tipoMap[tipoKey] || tipoMap['PF'];
 
   document.getElementById("sp-empty").style.display = "none";
 
@@ -110,8 +114,8 @@ function abrirPainel(id) {
 // ---------- FILTROS ----------
 function aplicarFiltros() {
   const q    = document.getElementById("f-busca").value.toLowerCase().trim();
-  const tipoRaw = document.getElementById("f-tipo-modal").value;
-  const tipo = tipoRaw === 'PJ' ? 'PESSOA_JURIDICA' : 'PESSOA_FISICA';
+  // ✅ Corrigido: usa f-tipo (barra de filtros) não f-tipo-modal (modal de criação)
+  const tipoVal = document.getElementById("f-tipo").value;
   const vip  = document.getElementById("f-vip").value;
   const resp = document.getElementById("f-responsavel").value;
 
@@ -119,7 +123,11 @@ function aplicarFiltros() {
     if (q && !c.nome.toLowerCase().includes(q) &&
             !c.email.toLowerCase().includes(q) &&
             !c.telefone.includes(q)) return false;
-    if (tipo && c.tipo !== tipo) return false;
+    if (tipoVal) {
+      // f-tipo usa valores PESSOA_FISICA / PESSOA_JURIDICA
+      const tipoCliente = c.tipo === 'PJ' ? 'PESSOA_JURIDICA' : 'PESSOA_FISICA';
+      if (tipoCliente !== tipoVal) return false;
+    }
     if (vip === "vip" && !c.vip) return false;
     if (resp && c.resp !== resp) return false;
     return true;
@@ -137,9 +145,9 @@ function aplicarFiltros() {
 }
 
 function limparFiltros() {
-  document.getElementById("f-busca").value = "";
-  document.getElementById("f-tipo").value = "";
-  document.getElementById("f-vip").value = "";
+  document.getElementById("f-busca").value       = "";
+  document.getElementById("f-tipo").value        = ""; // ✅ corrigido
+  document.getElementById("f-vip").value         = "";
   document.getElementById("f-responsavel").value = "";
   aplicarFiltros();
 }
@@ -164,7 +172,9 @@ function limparModal() {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
-  document.getElementById("f-tipo-modal").value = "PESSOA_FISICA";
+  document.getElementById("f-tipo-modal").value = "PF";
+  const vipCheck = document.getElementById("f-vip-modal");
+  if (vipCheck) vipCheck.checked = false;
 }
 
 async function salvarCliente() {
@@ -173,7 +183,10 @@ async function salvarCliente() {
   const email    = document.getElementById("f-email").value.trim();
   const cpfCnpj  = document.getElementById("f-doc").value.trim();
   const endereco = document.getElementById("f-endereco").value.trim();
-  const tipo     = document.getElementById("f-tipo-modal").value;
+  const tipoRaw  = document.getElementById("f-tipo-modal").value;
+
+  // Converte PF/PJ para o formato que o backend espera
+  const tipo = tipoRaw === 'PJ' ? 'PESSOA_JURIDICA' : 'PESSOA_FISICA';
 
   if (!nome) {
     Toast.show('Preencha o nome do cliente.', 'error');
@@ -187,10 +200,10 @@ async function salvarCliente() {
     await criarClienteAPI({
       nome,
       tipo,
-      telefone: telefone || undefined,
-      email: email || undefined,
-      cpfCnpj: cpfCnpj || undefined,
-      endereco: endereco || undefined,
+      telefone:  telefone  || undefined,
+      email:     email     || undefined,
+      cpfCnpj:   cpfCnpj   || undefined,
+      endereco:  endereco  || undefined,
     });
 
     Toast.show('Cliente cadastrado com sucesso!', 'success');
@@ -232,4 +245,7 @@ document.getElementById("f-responsavel").addEventListener("change", aplicarFiltr
 document.addEventListener("DOMContentLoaded", async () => {
   Auth.exigirLogin();
   await carregarEAplicar();
+  if (typeof Notifications !== 'undefined') {
+    Notifications.init('btn-notificacoes');
+  }
 });
