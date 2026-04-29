@@ -94,6 +94,13 @@ function renderGrid(semana, hoje, filtroResp) {
     return `<div class="day-col${isToday ? ' today' : ''}">${linhas}${nowLine}${blocos}</div>`;
   }).join('');
   grid.innerHTML = timeCol + diasCols;
+  grid.querySelectorAll('.event').forEach(el => {
+  el.addEventListener('click', () => {
+    const id = el.dataset.id;
+    const ev = eventosData.find(e => String(e.id) === id);
+    if (ev) abrirModalDetalhes(ev);
+  });
+});
 }
 
 function eventoHTML(ev) {
@@ -151,6 +158,38 @@ function limparModal() {
   document.getElementById('f-tipo').value     = 'AUDIENCIA';
   document.getElementById('f-hora-ini').value = '09:00';
   document.getElementById('f-hora-fim').value = '10:00';
+}
+
+// ---------- MODAL DETALHES ----------
+function abrirModalDetalhes(ev) {
+  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const semana = getSemana(weekOffset);
+  const data = semana[ev.dia];
+  const dataStr = `${dias[data.getDay()]}, ${data.getDate()} de ${MESES[data.getMonth()]}`;
+
+  document.getElementById('det-titulo').textContent = ev.titulo;
+  document.getElementById('det-data').textContent = dataStr;
+  document.getElementById('det-hora').textContent = `${formatHora(ev.hIni)} — ${formatHora(ev.hFim)}`;
+  document.getElementById('det-sub').textContent = ev.sub || '—';
+  document.getElementById('det-id').value = ev.id;
+
+  document.getElementById('modal-detalhes').classList.add('active');
+}
+
+function fecharModalDetalhes() {
+  document.getElementById('modal-detalhes').classList.remove('active');
+}
+
+async function excluirEvento() {
+  const id = document.getElementById('det-id').value;
+  try {
+    await Api.delete(`/eventos/${id}`);
+    Toast.show('Evento excluído.', 'success');
+    fecharModalDetalhes();
+    await carregarEventos();
+  } catch (err) {
+    Toast.show('Erro ao excluir evento.', 'error');
+  }
 }
 
 async function salvarEvento() {

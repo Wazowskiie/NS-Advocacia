@@ -176,6 +176,27 @@
         <button class="btn btn--primary" id="modal-save">Salvar Evento</button>
       </div>
     </div>
+    <div class="modal-overlay" id="modal-detalhes">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="det-titulo"></h3>
+      <button class="modal-close" onclick="fecharModalDetalhes()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-meta">📅 <span id="det-data"></span></p>
+      <p class="modal-meta">🕘 <span id="det-hora"></span></p>
+      <p class="modal-meta">📝 <span id="det-sub"></span></p>
+      <input type="hidden" id="det-id" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--danger" onclick="excluirEvento()">Excluir evento</button>
+      <button class="btn btn--secondary" onclick="fecharModalDetalhes()">Fechar</button>
+    </div>
+  </div>
+</div>
+
   </div>
   <script src="../js/agenda-data.js"></script>
   <script src="../js/auth.js"></script>
