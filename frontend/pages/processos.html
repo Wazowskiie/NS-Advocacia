@@ -169,11 +169,10 @@
         </div>
         <div class="form-row">
           <div class="form-group">
+            <div class="form-group">
             <label>Cliente</label>
-            <!-- Select populado via JS com clientes do backend -->
-            <select id="f-cliente">
-              <option value="">Carregando clientes...</option>
-            </select>
+            <input type="text" id="f-cliente" placeholder="Ex: João da Silva" />
+          </div>
           </div>
           <div class="form-group">
             <label>Área</label>
@@ -192,20 +191,19 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Responsável</label>
-            <select id="f-resp-modal">
-              <option value="Rafael Silva">Rafael Silva</option>
-              <option value="Beatriz Mendes">Beatriz Mendes</option>
-              <option value="Thiago Carvalho">Thiago Carvalho</option>
-            </select>
-          </div>
+           <label>Responsável</label>
+           <select id="f-resp-modal">
+           <option value="">Carregando...</option>
+           </select>
+           </div> 
           <div class="form-group">
             <label>Status</label>
             <select id="f-status-modal">
-              <option value="ATIVO">Em andamento</option>
-              <option value="SUSPENSO">Suspenso</option>
-              <option value="ARQUIVADO">Arquivado</option>
-            </select>
+          <option value="ATIVO">Em andamento</option>
+          <option value="SUSPENSO">Suspenso</option>
+          <option value="ARQUIVADO">Arquivado</option>
+          <option value="ENCERRADO">Encerrado</option>
+          </select>
           </div>
         </div>
         <div class="form-row">

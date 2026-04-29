@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma.js'
 
 export default async function processoRoutes(app) {
-  const opts =  onRequest: [app.authenticate] }: [app.authenticate] }
+  const opts = { onRequest: [app.authenticate] }
 
   app.get('/', opts, async (request) => {
     const { escritorioId } = request.user
@@ -47,31 +47,37 @@ export default async function processoRoutes(app) {
     return processo
   })
 
-  app.post('/', opts, async (request, reply) => {
-    const { escritorioId, id: usuarioId } = request.user
-    const { titulo, clienteId, area, numero, tribunal, vara, comarca, valorCausa, dataDistribuicao, descricao, advogadosIds = [] } = request.body
+ app.post('/', opts, async (request, reply) => {
+  const { escritorioId, id: usuarioId } = request.user
+  const { titulo, clienteNome, area, numero, tribunal, vara, comarca, valorCausa, dataDistribuicao, descricao } = request.body
 
-    if (!titulo || !clienteId || !area) {
-      return reply.status(400).send({ error: 'Título, cliente e área são obrigatórios' })
-    }
+  if (!titulo || !clienteNome || !area) {
+    return reply.status(400).send({ error: 'Título, cliente e área são obrigatórios' })
+  }
 
-    return reply.status(201).send(
-      await prisma.processo.create({
-        data: {
-          escritorioId, titulo, clienteId, area, numero, tribunal, vara, comarca,
-          valorCausa, dataDistribuicao: dataDistribuicao ? new Date(dataDistribuicao) : null,
-          descricao,
-          advogados: {
-            create: [
-              { usuarioId, principal: true },
-              ...advogadosIds.filter(id => id !== usuarioId).map(id => ({ usuarioId: id, principal: false }))
-            ]
-          }
-        },
-        include: { cliente: { select: { id: true, nome: true } }, advogados: true }
-      })
-    )
+  // Busca cliente pelo nome ou cria automaticamente
+  let cliente = await prisma.cliente.findFirst({
+    where: { escritorioId, nome: { equals: clienteNome, mode: 'insensitive' } }
   })
+
+  if (!cliente) {
+    cliente = await prisma.cliente.create({
+      data: { escritorioId, nome: clienteNome }
+    })
+  }
+
+  return reply.status(201).send(
+    await prisma.processo.create({
+      data: {
+        escritorioId, titulo, clienteId: cliente.id, area, numero, tribunal, vara, comarca,
+        valorCausa, dataDistribuicao: dataDistribuicao ? new Date(dataDistribuicao) : null,
+        descricao,
+        advogados: { create: [{ usuarioId, principal: true }] }
+      },
+      include: { cliente: { select: { id: true, nome: true } }, advogados: true }
+    })
+  )
+})
 
   app.put('/:id', opts, async (request, reply) => {
     const { escritorioId } = request.user

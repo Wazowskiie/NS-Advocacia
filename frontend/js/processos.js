@@ -217,7 +217,7 @@ function limparModal() {
 async function salvarProcesso() {
   const titulo   = document.getElementById("f-tipo").value.trim();
   const numero   = document.getElementById("f-numero").value.trim();
-  const clienteId = document.getElementById("f-cliente").value;
+  const cliente = document.getElementById("f-cliente").value.trim();
   const area     = document.getElementById("f-area").value;
   const resp     = document.getElementById("f-resp-modal").value;
   const status   = document.getElementById("f-status-modal").value;
@@ -231,10 +231,11 @@ async function salvarProcesso() {
     Toast.show('Preencha o Tipo de Ação.', 'error');
     return;
   }
-  if (!clienteId) {
-    Toast.show('Selecione um cliente.', 'error');
-    return;
-  }
+  if (!cliente) {
+  Toast.show('Preencha o nome do cliente.', 'error');
+  return;
+}
+
   if (!area) {
     Toast.show('Selecione a Área.', 'error');
     return;
@@ -245,16 +246,16 @@ async function salvarProcesso() {
 
   try {
     const payload = {
-      titulo,
-      clienteId:   Number(clienteId),
-      area,
-      status,
-      numero:      numero  || undefined,
-      vara:        vara    || undefined,
-      comarca:     comarca || undefined,
-      valorCausa:  valor   ? Number(valor.replace(/\D/g, '')) : undefined,
-      prazo:       prazo   || undefined,
-    };
+  titulo,
+  cliente,        // 👈 texto livre agora
+  area,
+  status,
+  numero:     numero   || undefined,
+  vara:       vara     || undefined,
+  comarca:    comarca  || undefined,
+  valorCausa: valor    ? Number(valor.replace(/\D/g, '')) : undefined,
+  prazo:      prazo    || undefined,
+};
 
     const criado = await criarProcessoAPI(payload);
 
@@ -289,8 +290,32 @@ document.getElementById("f-prazo").addEventListener("change", aplicarFiltros);
 
 // ---------- INIT ----------
 document.addEventListener("DOMContentLoaded", async () => {
+  Auth.exigirLogin();
+
+  const usuario = Auth.getUsuario();
+  if (usuario) {
+    // Sidebar
+    const elNome  = document.getElementById('sidebar-nome');
+    const elCargo = document.getElementById('sidebar-cargo');
+    const elAv    = document.getElementById('sidebar-avatar');
+    if (elNome)  elNome.textContent  = usuario.nome;
+    if (elCargo) elCargo.textContent = usuario.cargo;
+    if (elAv)    elAv.textContent    = usuario.nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+
+    // Select responsável do modal
+    const selectResp = document.getElementById('f-resp-modal');
+    if (selectResp) {
+      selectResp.innerHTML = `<option value="${usuario.id}">${usuario.nome}</option>`;
+    }
+
+    // Filtro responsável
+    const selectFiltro = document.getElementById('f-responsavel');
+    if (selectFiltro) {
+      selectFiltro.innerHTML = `<option value="">Responsável</option><option value="${usuario.id}">${usuario.nome}</option>`;
+    }
+  }
+
   await carregarProcessosData();
-  await carregarClientesSelect();
   aplicarFiltros();
 
   if (typeof Notifications !== 'undefined') {
