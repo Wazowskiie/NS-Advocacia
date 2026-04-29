@@ -2,12 +2,12 @@
 // NS Advocacia — Honorário Detalhe
 // ============================================================
 const params=new URLSearchParams(window.location.search);
-const honId=Number(params.get('id'));
+const honId=(params.get('id'));
 const sMap={'Pago':{cls:'pill--progress',label:'Pago'},'Pendente':{cls:'pill--waiting',label:'Pendente'},'Em atraso':{cls:'pill--urgent',label:'Em atraso'},'Parcelado':{cls:'pill--info',label:'Parcelado'}};
 let _hon=null;
 async function init() {
   if(!honId){document.querySelector('.main').innerHTML='<div style="padding:48px;text-align:center;color:#9a9a94">ID não informado.</div>';return;}
-  try{_hon=await Api.get(`/honorarios/${honId}`);}catch(err){document.querySelector('.main').innerHTML='<div style="padding:48px;text-align:center;color:#9a9a94">Honorário não encontrado.</div>';return;}
+  try{__hon = await Api.get(`/financeiro/${honId}`);}catch(err){document.querySelector('.main').innerHTML='<div style="padding:48px;text-align:center;color:#9a9a94">Honorário não encontrado.</div>';return;}
   if(!_hon){document.querySelector('.main').innerHTML='<div style="padding:48px;text-align:center;color:#9a9a94">Honorário não encontrado.</div>';return;}
   const h=_hon;
   const titulo=h.processo?.titulo||h.tipo||'Honorário';
@@ -37,8 +37,7 @@ async function init() {
   const btnPago=document.getElementById('btn-marcar-pago');
   if(h.status==='Pago'){btnPago.disabled=true;btnPago.textContent='Já pago';btnPago.style.opacity='0.5';}
   else{btnPago.onclick=()=>{Confirm.show('Marcar como pago?',`Confirma o recebimento de R$ ${Number(h.valor).toLocaleString('pt-BR')}?`,async()=>{
-    try{await Api.patch(`/honorarios/${honId}`,{status:'Pago'});Toast.show('Honorário marcado como pago!','success');setTimeout(()=>window.location.reload(),1000);}
-    catch(err){Toast.show('Erro ao atualizar status.','error');}
+try{await Api.patch(`/financeiro/${honId}/pagar`,{});Toast.show('Honorário marcado como pago!','success');setTimeout(()=>window.location.reload(),1000);}    catch(err){Toast.show('Erro ao atualizar status.','error');}
   });};  }
   if(typeof Notifications!=='undefined') Notifications.init('btn-notificacoes');
 }
