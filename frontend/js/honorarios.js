@@ -4,6 +4,11 @@
 // ============================================================
 
 const honorariosStatusMap = {
+  'PENDENTE':  { cls: 'pill--waiting',  label: 'Pendente'  },
+  'PAGO':      { cls: 'pill--progress', label: 'Pago'      },
+  'ATRASADO':  { cls: 'pill--urgent',   label: 'Em atraso' },
+  'CANCELADO': { cls: 'pill--waiting',  label: 'Cancelado' },
+  // Compatibilidade
   'Pago':      { cls: 'pill--progress', label: 'Pago'      },
   'Pendente':  { cls: 'pill--waiting',  label: 'Pendente'  },
   'Em atraso': { cls: 'pill--urgent',   label: 'Em atraso' },
@@ -20,17 +25,17 @@ let honorariosData = [];
 
 async function carregarHonorarios() {
   try {
-    const dados = await Api.get('/honorarios');
+    const dados = await Api.get('/financeiro?tipo=RECEITA');
     honorariosData = (dados || []).map((h, i) => ({
       id:       h.id,
       processo: h.processo?.titulo || '—',
       num:      h.processo?.numero || '—',
       cliente:  h.cliente?.nome || h.processo?.cliente?.nome || '—',
       cor:      _cores[i % _cores.length],
-      tipo:     h.tipo || 'Fixo',
+      tipo:     h.categoria || h.tipo || 'Fixo',
       valor:    Number(h.valor) || 0,
       venc:     h.dataVencimento ? new Date(h.dataVencimento).toLocaleDateString('pt-BR') : '—',
-      status:   h.status || 'Pendente',
+      status:   h.status || 'PENDENTE',
     }));
   } catch (err) {
     console.error('Erro ao carregar honorários:', err);
@@ -39,12 +44,12 @@ async function carregarHonorarios() {
 }
 
 function renderCards(lista) {
-  const recebido  = lista.filter(h => h.status === 'Pago').reduce((s, h) => s + h.valor, 0);
-  const pendente  = lista.filter(h => h.status === 'Pendente').reduce((s, h) => s + h.valor, 0);
-  const atraso    = lista.filter(h => h.status === 'Em atraso').reduce((s, h) => s + h.valor, 0);
+  const recebido  = lista.filter(h => h.status === 'PAGO' || h.status === 'Pago').reduce((s, h) => s + h.valor, 0);
+  const pendente  = lista.filter(h => h.status === 'PENDENTE' || h.status === 'Pendente').reduce((s, h) => s + h.valor, 0);
+  const atraso    = lista.filter(h => h.status === 'ATRASADO' || h.status === 'Em atraso').reduce((s, h) => s + h.valor, 0);
   const parcelado = lista.filter(h => h.status === 'Parcelado').reduce((s, h) => s + h.valor, 0);
-  const nPendente  = lista.filter(h => h.status === 'Pendente').length;
-  const nAtraso    = lista.filter(h => h.status === 'Em atraso').length;
+  const nPendente  = lista.filter(h => h.status === 'PENDENTE' || h.status === 'Pendente').length;
+  const nAtraso    = lista.filter(h => h.status === 'ATRASADO' || h.status === 'Em atraso').length;
   const nParcelado = lista.filter(h => h.status === 'Parcelado').length;
 
   document.getElementById('summary-cards').innerHTML = `
@@ -79,7 +84,7 @@ function renderGrafico(lista) {
     if (partes.length < 2) return;
     const mes = parseInt(partes[1]) - 1;
     if (mes < 0 || mes > 11) return;
-    if (h.status === 'Pago') recebido[mes] += h.valor;
+    if (h.status === 'PAGO' || h.status === 'Pago') recebido[mes] += h.valor;
     else pendente[mes] += h.valor;
   });
   const maxVal = Math.max(...meses.map((_, i) => recebido[i] + pendente[i]), 1);
@@ -102,7 +107,7 @@ function renderClientes(lista) {
   lista.forEach(h => {
     if (!porCliente[h.cliente]) porCliente[h.cliente] = { cor: h.cor, valor: 0, status: h.status };
     porCliente[h.cliente].valor += h.valor;
-    const prioridade = { 'Em atraso': 3, 'Pendente': 2, 'Parcelado': 1, 'Pago': 0 };
+    const prioridade = { 'ATRASADO': 3, 'Em atraso': 3, 'PENDENTE': 2, 'Pendente': 2, 'Parcelado': 1, 'PAGO': 0, 'Pago': 0 };
     if ((prioridade[h.status] || 0) > (prioridade[porCliente[h.cliente].status] || 0)) {
       porCliente[h.cliente].status = h.status;
     }
@@ -113,7 +118,7 @@ function renderClientes(lista) {
     return `<div class="client-row">
       <div class="cl-av" style="background:${info.cor}">${iniciais}</div>
       <div class="cl-info"><div class="cl-name">${nome}</div><div class="cl-val">${formatMoeda(info.valor)}</div></div>
-      <span class="pill ${s.cls}">${info.status}</span>
+      <span class="pill ${s.cls}">${s.label}</span>
     </div>`;
   }).join('') || '<p style="padding:16px;color:#aaa;font-size:13px">Nenhum dado disponível.</p>';
 }
@@ -128,14 +133,14 @@ function renderTabela(lista) {
   }
   tbody.innerHTML = lista.map(h => {
     const s = honorariosStatusMap[h.status] || honorariosStatusMap['Pendente'];
-    const podePagar = h.status !== 'Pago';
+    const podePagar = h.status !== 'PAGO' && h.status !== 'Pago';
     return `<div class="table-row" data-id="${h.id}">
       <div><div class="t-proc">${h.processo}</div><div class="t-sub">${h.num}</div></div>
       <div class="t-cell">${h.cliente.split(' ').slice(0,2).join(' ')}</div>
       <div><span class="tipo-tag">${h.tipo}</span></div>
       <div class="t-val">${formatMoeda(h.valor)}</div>
       <div class="t-cell">${h.venc}</div>
-      <div><span class="pill ${s.cls}">${h.status}</span></div>
+      <div><span class="pill ${s.cls}">${s.label}</span></div>
       <div style="display:flex;gap:6px;align-items:center">
         <button class="btn-det" onclick="window.location.href='honorario-detalhe.html?id=${h.id}'">Detalhes</button>
         ${podePagar ? `<button class="btn-pagar" data-id="${h.id}" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #2d7a52;background:#e8f5ee;color:#085041;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">✓ Pago</button>` : ''}
@@ -146,11 +151,11 @@ function renderTabela(lista) {
   tbody.querySelectorAll('.btn-pagar').forEach(btn => {
     btn.addEventListener('click', async e => {
       e.stopPropagation();
-      const id = Number(btn.dataset.id);
+      const id = btn.dataset.id;
       try {
-        await Api.patch(`/honorarios/${id}`, { status: 'Pago' });
+        await Api.patch(`/financeiro/${id}`, { status: 'PAGO' });
         const item = honorariosData.find(h => h.id === id);
-        if (item) item.status = 'Pago';
+        if (item) item.status = 'PAGO';
         Toast.show('Honorário marcado como pago!', 'success');
         aplicarFiltros();
       } catch (err) {
@@ -185,13 +190,15 @@ function limparModal() {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('f-tipo').value         = 'Fixo';
-  document.getElementById('f-status-modal').value = 'Pendente';
+  document.getElementById('f-status-modal').value = 'PENDENTE';
 }
 
 async function salvarLancamento() {
   const processo = document.getElementById('f-processo').value.trim();
   const cliente  = document.getElementById('f-cliente').value.trim();
   const valor    = parseFloat(document.getElementById('f-valor').value);
+  const resp     = document.getElementById('f-resp-modal')?.value;
+
   if (!processo || !cliente || isNaN(valor) || valor <= 0) {
     Toast.show('Preencha processo, cliente e valor.', 'error');
     return;
@@ -199,8 +206,10 @@ async function salvarLancamento() {
   btnSave.disabled = true;
   btnSave.textContent = 'Salvando...';
   try {
-    await Api.post('/honorarios', {
-      tipo:           document.getElementById('f-tipo').value,
+    await Api.post('/financeiro', {
+      tipo:           'RECEITA',
+      categoria:      document.getElementById('f-tipo').value,
+      descricao:      `${processo} — ${cliente}`,
       valor,
       status:         document.getElementById('f-status-modal').value,
       dataVencimento: document.getElementById('f-venc').value || undefined,
@@ -232,6 +241,23 @@ document.getElementById('f-ano').addEventListener('change', () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  Auth.exigirLogin();
+
+  const usuario = Auth.getUsuario();
+  if (usuario) {
+    const elNome  = document.getElementById('sidebar-nome');
+    const elCargo = document.getElementById('sidebar-cargo');
+    const elAv    = document.getElementById('sidebar-avatar');
+    if (elNome)  elNome.textContent  = usuario.nome;
+    if (elCargo) elCargo.textContent = usuario.cargo;
+    if (elAv)    elAv.textContent    = usuario.nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+
+    const selectResp = document.getElementById('f-resp-modal');
+    if (selectResp) {
+      selectResp.innerHTML = `<option value="${usuario.id}">${usuario.nome}</option>`;
+    }
+  }
+
   await carregarHonorarios();
   aplicarFiltros();
   if (typeof Notifications !== 'undefined') Notifications.init('btn-notificacoes');

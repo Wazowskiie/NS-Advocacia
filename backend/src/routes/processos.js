@@ -88,6 +88,15 @@ export default async function processoRoutes(app) {
     return prisma.processo.update({ where: { id: request.params.id }, data })
   })
 
+  app.patch('/:id', opts, async (request, reply) => {
+  const { escritorioId } = request.user
+  const existe = await prisma.processo.findFirst({ where: { id: request.params.id, escritorioId } })
+  if (!existe) return reply.status(404).send({ error: 'Processo não encontrado' })
+
+  const { advogadosIds, ...data } = request.body
+  return prisma.processo.update({ where: { id: request.params.id }, data })
+})
+
   // Adicionar andamento
   app.post('/:id/andamentos', opts, async (request, reply) => {
     const { escritorioId } = request.user
