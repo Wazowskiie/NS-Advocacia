@@ -82,7 +82,7 @@ export default async function authRoutes(app) {
   })
 
   // GET /auth/me — dados do usuário logado
-  app.get('/me', { onRequest: [app.authenticate] }, async (request) => {
+  aapp.get('/me', { onRequest: [app.authenticate] }, async (request) => {
     const usuario = await prisma.usuario.findUnique({
       where: { id: request.user.id },
       select: {

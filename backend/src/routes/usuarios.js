@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import prisma from '../lib/prisma.js'
 
 export default async function usuarioRoutes(app) {
-  const opts = { onRequest: [app.authenticate] }
+  const opts =  onRequest: [app.authenticate] }: [app.authenticate] }
 
   app.get('/', opts, async (request) => {
     const { escritorioId } = request.user

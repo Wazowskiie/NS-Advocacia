@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma.js'
 
 export default async function dashboardRoutes(app) {
-  app.get('/', { onRequest: [app.authenticate] }, async (request) => {
+  app.get('/',  onRequest: [app.authenticate] }: [app.authenticate] }, async (request) => {
     const { escritorioId } = request.user
     const hoje = new Date()
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)

@@ -1,7 +1,7 @@
 import prisma from '../lib/prisma.js'
 
 export default async function clienteRoutes(app) {
-  const opts = { onRequest: [app.authenticate] }
+  const opts =  onRequest: [app.authenticate] }: [app.authenticate] }
 
   // Listar clientes do escritório
   app.get('/', opts, async (request) => {
