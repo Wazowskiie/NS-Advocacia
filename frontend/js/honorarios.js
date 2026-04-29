@@ -142,7 +142,7 @@ function renderTabela(lista) {
       <div class="t-cell">${h.venc}</div>
       <div><span class="pill ${s.cls}">${s.label}</span></div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn-det" onclick="window.location.href='honorario-detalhe.html?id=${h.id}'">Detalhes</button>
+        <button class="btn-det" onclick="window.location.href='honorario-detalhes.html?id=${h.id}'">Detalhes</button>
         ${podePagar ? `<button class="btn-pagar" data-id="${h.id}" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #2d7a52;background:#e8f5ee;color:#085041;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">✓ Pago</button>` : ''}
       </div>
     </div>`;
