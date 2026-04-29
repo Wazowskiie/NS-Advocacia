@@ -247,7 +247,7 @@ async function salvarProcesso() {
   try {
     const payload = {
   titulo,
-  cliente,        // 👈 texto livre agora
+  clienteNome: cliente,        // 👈 texto livre agora
   area,
   status,
   numero:     numero   || undefined,
