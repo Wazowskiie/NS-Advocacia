@@ -177,7 +177,8 @@ async function salvarEvento() {
   const dataFim    = `${data}T${horaFim}:00`;
 
   try {
-    await Api.post('/eventos', { titulo, descricao: sub, tipo, dataInicio, dataFim });
+    const usuario = Auth.getUsuario();
+    await Api.post('/eventos', { titulo, descricao: sub, tipo, dataInicio, dataFim, usuarioId: usuario ? usuario.id : null });
     Toast.show('Evento criado com sucesso!', 'success');
     fecharModal();
     await carregarEventos();
@@ -199,8 +200,26 @@ btnSave.addEventListener('click', salvarEvento);
 overlay.addEventListener('click', e => { if (e.target === overlay) fecharModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
 
+
 // ---------- INIT ----------
 document.addEventListener('DOMContentLoaded', () => {
+  Auth.exigirLogin();
+
+  const usuario = Auth.getUsuario();
+  if (usuario) {
+    const select = document.getElementById('f-responsavel');
+    const opt = document.createElement('option');
+    opt.value = String(usuario.id);
+    opt.textContent = usuario.nome;
+    opt.selected = true;
+    select.appendChild(opt);
+
+    const selectModal = document.getElementById('f-resp-modal');
+    if (selectModal) {
+      selectModal.innerHTML = `<option value="${usuario.id}">${usuario.nome}</option>`;
+    }
+  }
+
   carregarEventos();
   Notifications.init('btn-notificacoes');
 });
