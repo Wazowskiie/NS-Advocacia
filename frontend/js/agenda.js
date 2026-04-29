@@ -6,8 +6,8 @@ const tipoClass = {
   AUDIENCIA:  'ev-audiencia',
   REUNIAO:    'ev-reuniao',
   PRAZO:      'ev-prazo',
+  PROTOCOLO:  'ev-protocolo',
   DILIGENCIA: 'ev-tarefa',
-  OUTRO:      'ev-tarefa',
 };
 
 let weekOffset = 0;
