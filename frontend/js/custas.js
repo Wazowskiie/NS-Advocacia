@@ -1,45 +1,83 @@
-// ---------- CARDS ----------
+// ============================================================
+// NS Advocacia — Custas
+// Integrado com backend via API
+// ============================================================
+
+const custasStatusMap = {
+  'Pendente':    { cls: 'pill--waiting',  label: 'Pendente'    },
+  'Reembolsado': { cls: 'pill--info',     label: 'Reembolsado' },
+  'Pago':        { cls: 'pill--progress', label: 'Pago'        },
+};
+
+const tipoConfig = {
+  'Taxa judiciária':        { cor: '#2d5a3d' },
+  'Depósito recursal':      { cor: '#3d5a7a' },
+  'Peritos / assistentes':  { cor: '#7a6a3d' },
+  'Diligências / oficiais': { cor: '#5a3d6a' },
+  'Cópias e certidões':     { cor: '#3d6a5a' },
+  'Outras despesas':        { cor: '#888780' },
+};
+
+function formatMoeda(v) {
+  return `R$ ${(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+}
+
+let custasData = [];
+
+async function carregarCustas() {
+  try {
+    const dados = await Api.get('/custas');
+    custasData = (dados || []).map(c => ({
+      id:       c.id,
+      processo: c.processo?.titulo || '—',
+      num:      c.processo?.numero || '—',
+      cliente:  c.cliente?.nome || c.processo?.cliente?.nome || '—',
+      tipo:     c.tipo || 'Outras despesas',
+      valor:    Number(c.valor) || 0,
+      data:     c.data ? new Date(c.data).toLocaleDateString('pt-BR') : '—',
+      pagador:  c.pagador || 'Escritório',
+      status:   c.status || 'Pendente',
+    }));
+  } catch (err) {
+    console.error('Erro ao carregar custas:', err);
+    custasData = [];
+  }
+}
+
 function renderCards(lista) {
-  const total    = lista.reduce((s, c) => s + c.valor, 0);
+  const total      = lista.reduce((s, c) => s + c.valor, 0);
   const escritorio = lista.filter(c => c.pagador === 'Escritório').reduce((s, c) => s + c.valor, 0);
-  const pendente = lista.filter(c => c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
-  const reemb    = lista.filter(c => c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
+  const pendente   = lista.filter(c => c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
+  const reemb      = lista.filter(c => c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
 
   document.getElementById('summary-cards').innerHTML = `
     <div class="s-card s-card--primary">
       <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-      <div class="s-num">${formatMoeda(total)}</div>
-      <div class="s-lbl">Total em custas</div>
+      <div class="s-num">${formatMoeda(total)}</div><div class="s-lbl">Total em custas</div>
     </div>
     <div class="s-card">
-      <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
       <span class="s-badge s-badge--escrit">adiantado</span>
-      <div class="s-num">${formatMoeda(escritorio)}</div>
-      <div class="s-lbl">Pelo escritório</div>
+      <div class="s-num">${formatMoeda(escritorio)}</div><div class="s-lbl">Pelo escritório</div>
     </div>
     <div class="s-card">
       <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       <span class="s-badge s-badge--pendente">a receber</span>
-      <div class="s-num">${formatMoeda(pendente)}</div>
-      <div class="s-lbl">Pendente reembolso</div>
+      <div class="s-num">${formatMoeda(pendente)}</div><div class="s-lbl">Pendente reembolso</div>
     </div>
     <div class="s-card">
-      <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+      <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/></svg></div>
       <span class="s-badge s-badge--reemb">quitado</span>
-      <div class="s-num">${formatMoeda(reemb)}</div>
-      <div class="s-lbl">Reembolsado</div>
-    </div>
-  `;
+      <div class="s-num">${formatMoeda(reemb)}</div><div class="s-lbl">Reembolsado</div>
+    </div>`;
 }
 
-// ---------- QUEM PAGOU ----------
 function renderPagador(lista) {
   const total      = lista.reduce((s, c) => s + c.valor, 0) || 1;
   const escritorio = lista.filter(c => c.pagador === 'Escritório').reduce((s, c) => s + c.valor, 0);
   const cliente    = lista.filter(c => c.pagador === 'Cliente').reduce((s, c) => s + c.valor, 0);
   const pendente   = lista.filter(c => c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
   const reemb      = lista.filter(c => c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
-
   const pctEscrit  = Math.round((escritorio / total) * 100);
   const pctCliente = Math.round((cliente / total) * 100);
   const pctPend    = escritorio > 0 ? Math.round((pendente / escritorio) * 100) : 0;
@@ -62,48 +100,32 @@ function renderPagador(lista) {
     <div class="pagador-row">
       <div class="pagador-label"><span>Pendente de reembolso</span><span>${formatMoeda(pendente)}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${pctPend}%;background:#c07a20"></div></div>
-    </div>
-  `;
+    </div>`;
 }
 
-// ---------- TIPOS ----------
 function renderTipos(lista) {
   const total = lista.reduce((s, c) => s + c.valor, 0) || 1;
   const porTipo = {};
-
-  lista.forEach(c => {
-    porTipo[c.tipo] = (porTipo[c.tipo] || 0) + c.valor;
-  });
-
+  lista.forEach(c => { porTipo[c.tipo] = (porTipo[c.tipo] || 0) + c.valor; });
   const ordenado = Object.entries(porTipo).sort((a, b) => b[1] - a[1]);
-
   document.getElementById('tipo-list').innerHTML = ordenado.map(([tipo, valor]) => {
     const cfg = tipoConfig[tipo] || { cor: '#888780' };
     const pct = Math.round((valor / total) * 100);
     return `<div class="tipo-row">
-      <div class="tipo-info">
-        <div class="tipo-dot" style="background:${cfg.cor}"></div>
-        <span class="tipo-nome">${tipo}</span>
-      </div>
-      <div class="tipo-right">
-        <span class="tipo-val">${formatMoeda(valor)}</span>
-        <span class="tipo-pct">${pct}%</span>
-      </div>
+      <div class="tipo-info"><div class="tipo-dot" style="background:${cfg.cor}"></div><span class="tipo-nome">${tipo}</span></div>
+      <div class="tipo-right"><span class="tipo-val">${formatMoeda(valor)}</span><span class="tipo-pct">${pct}%</span></div>
     </div>`;
   }).join('');
 }
 
-// ---------- TABELA ----------
 function renderTabela(lista) {
   const tbody = document.getElementById('table-body');
   const count = document.getElementById('table-count');
-
   if (!lista.length) {
     tbody.innerHTML = '<div class="empty-state">Nenhuma custa encontrada para os filtros aplicados.</div>';
     count.textContent = '';
     return;
   }
-
   tbody.innerHTML = lista.map(c => {
     const s = custasStatusMap[c.status] || custasStatusMap['Pendente'];
     const pgCls = c.pagador === 'Escritório' ? 'pagador-tag--escrit' : 'pagador-tag--cliente';
@@ -118,35 +140,35 @@ function renderTabela(lista) {
       <div><span class="pill ${s.cls}">${s.label}</span></div>
       <div style="display:flex;gap:6px;align-items:center">
         <button class="btn-ver">Ver</button>
-        ${podeReembolsar ? `<button class="btn-reembolsar" data-id="${c.id}" title="Marcar como reembolsado" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #2563a8;background:#e8f0fb;color:#0c447c;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.12s">↩ Reemb.</button>` : ''}
+        ${podeReembolsar ? `<button class="btn-reembolsar" data-id="${c.id}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #2563a8;background:#e8f0fb;color:#0c447c;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">↩ Reemb.</button>` : ''}
       </div>
     </div>`;
   }).join('');
 
-  // Bind botões "Reembolsar"
   tbody.querySelectorAll('.btn-reembolsar').forEach(btn => {
-    btn.addEventListener('click', e => {
+    btn.addEventListener('click', async e => {
       e.stopPropagation();
       const id = Number(btn.dataset.id);
-      const item = custasData.find(c => c.id === id);
-      if (!item) return;
-      item.status = 'Reembolsado';
-      Toast.show(`Custa de ${item.cliente.split(' ')[0]} marcada como reembolsada!`, 'info');
-      aplicarFiltros();
+      try {
+        await Api.patch(`/custas/${id}`, { status: 'Reembolsado' });
+        const item = custasData.find(c => c.id === id);
+        if (item) item.status = 'Reembolsado';
+        Toast.show('Custa marcada como reembolsada!', 'info');
+        aplicarFiltros();
+      } catch (err) {
+        Toast.show('Erro ao atualizar status.', 'error');
+      }
     });
   });
 
-  const n = lista.length;
-  count.textContent = `${n} lançamento${n !== 1 ? 's' : ''}`;
+  count.textContent = `${lista.length} lançamento${lista.length !== 1 ? 's' : ''}`;
 }
 
-// ---------- FILTROS ----------
 function aplicarFiltros() {
   const q       = document.getElementById('f-busca').value.toLowerCase().trim();
   const tipo    = document.getElementById('f-tipo').value;
   const pagador = document.getElementById('f-pagador').value;
   const status  = document.getElementById('f-status').value;
-
   const lista = custasData.filter(c => {
     if (q && !c.processo.toLowerCase().includes(q) && !c.cliente.toLowerCase().includes(q)) return false;
     if (tipo    && c.tipo    !== tipo)    return false;
@@ -154,7 +176,6 @@ function aplicarFiltros() {
     if (status  && c.status  !== status)  return false;
     return true;
   });
-
   renderCards(lista);
   renderPagador(lista);
   renderTipos(lista);
@@ -169,7 +190,6 @@ function limparFiltros() {
   aplicarFiltros();
 }
 
-// ---------- MODAL ----------
 const overlay   = document.getElementById('modal-overlay');
 const btnNovo   = document.getElementById('btn-novo');
 const btnClose  = document.getElementById('modal-close');
@@ -181,51 +201,45 @@ function fecharModal() { overlay.classList.remove('active'); limparModal(); }
 
 function limparModal() {
   ['f-processo','f-num','f-cliente','f-valor','f-data','f-obs'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+    const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('f-tipo-modal').value    = 'Taxa judiciária';
   document.getElementById('f-pagador-modal').value = 'Escritório';
   document.getElementById('f-status-modal').value  = 'Pendente';
 }
 
-function salvarCusta() {
+async function salvarCusta() {
   const processo = document.getElementById('f-processo').value.trim();
   const cliente  = document.getElementById('f-cliente').value.trim();
   const valor    = parseFloat(document.getElementById('f-valor').value);
-
   if (!processo || !cliente || isNaN(valor) || valor <= 0) {
-    alert('Preencha processo, cliente e valor.');
+    Toast.show('Preencha processo, cliente e valor.', 'error');
     return;
   }
-
-  // Validação
-Toast.show('Preencha processo, cliente e valor.', 'error');
-// Sucesso
-Toast.show('Custa registrada com sucesso!', 'success');
-
-  const dataRaw = document.getElementById('f-data').value;
-  let data = '—';
-  if (dataRaw) {
-    const [y, m, d] = dataRaw.split('-');
-    data = `${d}/${m}/${y}`;
+  btnSave.disabled = true;
+  btnSave.textContent = 'Salvando...';
+  try {
+    const dataRaw = document.getElementById('f-data').value;
+    await Api.post('/custas', {
+      tipo:           document.getElementById('f-tipo-modal').value,
+      valor,
+      pagador:        document.getElementById('f-pagador-modal').value,
+      status:         document.getElementById('f-status-modal').value,
+      data:           dataRaw || undefined,
+      descricao:      document.getElementById('f-obs').value.trim() || undefined,
+      processoTitulo: processo,
+      clienteNome:    cliente,
+    });
+    Toast.show('Custa registrada com sucesso!', 'success');
+    fecharModal();
+    await carregarCustas();
+    aplicarFiltros();
+  } catch (err) {
+    Toast.show(err.message || 'Erro ao salvar custa.', 'error');
+  } finally {
+    btnSave.disabled = false;
+    btnSave.textContent = 'Salvar';
   }
-
-  const novoId = custasData.length ? Math.max(...custasData.map(c => c.id)) + 1 : 1;
-  custasData.unshift({
-    id: novoId,
-    processo,
-    num: document.getElementById('f-num').value.trim() || '—',
-    cliente,
-    tipo:    document.getElementById('f-tipo-modal').value,
-    valor,
-    data,
-    pagador: document.getElementById('f-pagador-modal').value,
-    status:  document.getElementById('f-status-modal').value,
-  });
-
-  fecharModal();
-  aplicarFiltros();
 }
 
 btnNovo.addEventListener('click', abrirModal);
@@ -240,11 +254,12 @@ document.getElementById('f-pagador').addEventListener('change', aplicarFiltros);
 document.getElementById('f-status').addEventListener('change', aplicarFiltros);
 document.getElementById('btn-limpar').addEventListener('click', limparFiltros);
 document.getElementById('f-ano').addEventListener('change', () => {
-  const ano = document.getElementById('f-ano').value;
-  document.getElementById('ano-label').textContent = `Ano de ${ano}`;
+  document.getElementById('ano-label').textContent = `Ano de ${document.getElementById('f-ano').value}`;
   aplicarFiltros();
 });
 
-// ---------- INIT ----------
-document.addEventListener('DOMContentLoaded', () => aplicarFiltros())
-Notifications.init('btn-notificacoes');
+document.addEventListener('DOMContentLoaded', async () => {
+  await carregarCustas();
+  aplicarFiltros();
+  if (typeof Notifications !== 'undefined') Notifications.init('btn-notificacoes');
+});

@@ -1,5 +1,29 @@
+// ============================================================
+// NS Advocacia — Monitoramento
+// ============================================================
+
 let filtroAtivo = 'todos';
-let expandidas  = new Set([1]); // intimação 1 começa expandida
+
+// Dados simulados para a busca de importação (UI demonstrativa)
+const buscaSimulada = {
+  oab: [
+    { num: '0001234-56.2023.5.02.0001', tipo: 'Ação Trabalhista', tribunal: 'TRT-2', status: 'Em andamento', statusCls: 'pill--progress', checked: true },
+    { num: '0009876-12.2022.8.26.0100', tipo: 'Ação Cível',       tribunal: 'TJSP',  status: 'Aguardando',   statusCls: 'pill--waiting',  checked: false },
+    { num: '0005555-99.2024.4.03.6100', tipo: 'Ação Federal',     tribunal: 'TRF-3', status: 'Em andamento', statusCls: 'pill--progress', checked: false },
+  ],
+  cpf: [
+    { num: '0002345-67.2023.8.26.0002', tipo: 'Ação de Família',  tribunal: 'TJSP',  status: 'Em andamento', statusCls: 'pill--progress', checked: true },
+    { num: '0008765-43.2021.5.02.0050', tipo: 'Reclamação Trab.', tribunal: 'TRT-2', status: 'Encerrado',    statusCls: 'pill--waiting',  checked: false },
+  ],
+  cnj: [
+    { num: '0001111-22.2024.8.26.0050', tipo: 'Ação Indenizatória', tribunal: 'TJSP', status: 'Em andamento', statusCls: 'pill--progress', checked: true },
+  ],
+};
+
+// Dados de intimações — carregados da API ou vazios
+let intimacoesData = [];
+let monitoramentoData = [];
+let expandidas = new Set();
 
 // ---------- ABAS ----------
 document.querySelectorAll('.mon-tab').forEach(tab => {
@@ -11,7 +35,6 @@ document.querySelectorAll('.mon-tab').forEach(tab => {
   });
 });
 
-// Botão "Importar processos" no topbar abre aba de importar
 document.getElementById('btn-importar').addEventListener('click', () => {
   document.querySelectorAll('.mon-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.mon-pane').forEach(p => p.classList.remove('active'));
@@ -19,12 +42,58 @@ document.getElementById('btn-importar').addEventListener('click', () => {
   document.getElementById('pane-importar').classList.add('active');
 });
 
+// ---------- CARREGAR DADOS DA API ----------
+async function carregarMonitoramento() {
+  try {
+    const dados = await Api.get('/monitoramento');
+    monitoramentoData = (dados || []).map(m => ({
+      processoId:       m.processoId || m.id,
+      processo:         m.processo?.titulo || m.titulo || '—',
+      numero:           m.processo?.numero || m.numero || '—',
+      tribunal:         m.processo?.tribunal || m.tribunal || '—',
+      ultimaAtualizacao: m.ultimaAtualizacao || 'Sem dados',
+      andamentos:       m.totalAndamentos || 0,
+      statusSync:       m.statusSync || 'ok',
+      tipoAtualizacao:  m.tipoAtualizacao || 'ok',
+    }));
+  } catch (err) {
+    console.error('Erro ao carregar monitoramento:', err);
+    monitoramentoData = [];
+  }
+}
+
+async function carregarIntimacoes() {
+  try {
+    const dados = await Api.get('/intimacoes');
+    intimacoesData = (dados || []).map(i => ({
+      id:       i.id,
+      titulo:   i.titulo || 'Nova intimação',
+      sub:      i.processo?.titulo || '—',
+      tempo:    i.criadoEm ? _tempoRelativo(new Date(i.criadoEm)) : '—',
+      texto:    i.descricao || i.conteudo || 'Sem conteúdo disponível.',
+      lida:     i.lida || false,
+      btnPrazo: i.temPrazo ? '+ Adicionar prazo à agenda' : null,
+    }));
+  } catch (err) {
+    console.error('Erro ao carregar intimações:', err);
+    intimacoesData = [];
+  }
+}
+
+function _tempoRelativo(data) {
+  const agora = new Date();
+  const diff = Math.floor((agora - data) / 1000 / 60);
+  if (diff < 60) return `${diff} min atrás`;
+  if (diff < 1440) return `${Math.floor(diff / 60)}h atrás`;
+  return `${Math.floor(diff / 1440)} dias atrás`;
+}
+
 // ---------- STATS ----------
 function renderStats() {
-  const novas      = intimacoesData.filter(i => !i.lida).length;
-  const total      = monitoramentoData.length;
-  const hoje       = monitoramentoData.filter(m => m.ultimaAtualizacao.startsWith('Hoje')).length;
-  const semUpdate  = monitoramentoData.filter(m => m.statusSync === 'sem-atualizacao').length;
+  const novas     = intimacoesData.filter(i => !i.lida).length;
+  const total     = monitoramentoData.length;
+  const hoje      = monitoramentoData.filter(m => (m.ultimaAtualizacao || '').startsWith('Hoje')).length;
+  const semUpdate = monitoramentoData.filter(m => m.statusSync === 'sem-atualizacao').length;
 
   document.getElementById('mon-stats').innerHTML = `
     <div class="mon-stat mon-stat--alert">
@@ -42,8 +111,7 @@ function renderStats() {
     <div class="mon-stat">
       <div class="mon-stat__num">${semUpdate}</div>
       <div class="mon-stat__label">Sem atualização +7 dias</div>
-    </div>
-  `;
+    </div>`;
 }
 
 // ---------- TABELA MONITORAMENTO ----------
@@ -51,7 +119,7 @@ function renderMonitoramento() {
   const lista = filtroAtivo === 'todos'
     ? monitoramentoData
     : monitoramentoData.filter(m => {
-        if (filtroAtivo === 'intimacao')      return m.statusSync === 'intimacao';
+        if (filtroAtivo === 'intimacao')       return m.statusSync === 'intimacao';
         if (filtroAtivo === 'sem-atualizacao') return m.statusSync === 'sem-atualizacao';
         return true;
       });
@@ -59,7 +127,7 @@ function renderMonitoramento() {
   const tbody = document.getElementById('mon-tbody');
 
   if (!lista.length) {
-    tbody.innerHTML = '<div class="empty-state"><p>Nenhum processo encontrado para este filtro.</p></div>';
+    tbody.innerHTML = '<div class="empty-state"><p>Nenhum processo monitorado ainda.</p></div>';
     return;
   }
 
@@ -67,31 +135,20 @@ function renderMonitoramento() {
     const dotCls = m.tipoAtualizacao === 'alert' ? 'status-dot--alert'
                  : m.tipoAtualizacao === 'old'   ? 'status-dot--warn'
                  : 'status-dot--ok';
-
     const updateCls = m.tipoAtualizacao === 'alert' ? 'update-warn'
                     : m.tipoAtualizacao === 'old'   ? 'update-old'
                     : 'update-ok';
-
     const statusHTML = m.statusSync === 'intimacao'
-      ? `<span class="intim-badge">
-           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
-           Nova intimação
-         </span>`
+      ? `<span class="intim-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Nova intimação</span>`
       : m.statusSync === 'sem-atualizacao'
       ? `<span class="sync-warn">Verificar</span>`
-      : `<span class="sync-ok">
-           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-           Atualizado
-         </span>`;
+      : `<span class="sync-ok"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Atualizado</span>`;
 
     return `
       <div class="mon-row" onclick="window.location.href='processo-detalhe.html?id=${m.processoId}'">
         <div class="proc-identity">
           <div class="status-dot ${dotCls}"></div>
-          <div>
-            <div class="proc-name">${m.processo}</div>
-            <div class="proc-num">${m.numero}</div>
-          </div>
+          <div><div class="proc-name">${m.processo}</div><div class="proc-num">${m.numero}</div></div>
         </div>
         <div class="mon-cell">${m.tribunal}</div>
         <div class="${updateCls}">${m.ultimaAtualizacao}</div>
@@ -115,32 +172,28 @@ document.querySelectorAll('.mon-filter').forEach(btn => {
 // ---------- INTIMAÇÕES ----------
 function renderIntimacoes() {
   const lista = document.getElementById('intimacoes-lista');
-  lista.innerHTML = `<div class="intim-list">${intimacoesData.map(intim => intimacaoHTML(intim)).join('')}</div>`;
 
-  // Bind botões
+  if (!intimacoesData.length) {
+    lista.innerHTML = '<div class="empty-state"><p>Nenhuma intimação no momento.</p></div>';
+    return;
+  }
+
+  lista.innerHTML = `<div class="intim-list">${intimacoesData.map(i => intimacaoHTML(i)).join('')}</div>`;
+
   lista.querySelectorAll('.btn-marcar').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const id = Number(btn.dataset.id);
-      marcarLida(id);
-    });
+    btn.addEventListener('click', e => { e.stopPropagation(); marcarLida(Number(btn.dataset.id)); });
   });
-
   lista.querySelectorAll('.intim-card-header').forEach(h => {
     h.addEventListener('click', () => toggleIntimacao(h));
   });
-
   lista.querySelectorAll('.btn-prazo').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      Toast.show('Prazo adicionado à agenda!', 'success');
-    });
+    btn.addEventListener('click', e => { e.stopPropagation(); Toast.show('Prazo adicionado à agenda!', 'success'); });
   });
 }
 
 function intimacaoHTML(intim) {
   const isExpandida = expandidas.has(intim.id);
-  const cls = intim.lida ? 'intim-card--lida' : 'intim-card--nova';
+  const cls     = intim.lida ? 'intim-card--lida' : 'intim-card--nova';
   const iconCls = intim.lida ? 'intim-icon--lida' : 'intim-icon--nova';
   const badgeHTML = intim.lida
     ? '<span class="badge-lida">Lida</span>'
@@ -179,24 +232,31 @@ function intimacaoHTML(intim) {
 }
 
 function toggleIntimacao(header) {
-  const card  = header.closest('.intim-card');
-  const body  = card.querySelector('.intim-body');
-  const id    = Number(card.id.replace('intim-', ''));
+  const card = header.closest('.intim-card');
+  const body = card.querySelector('.intim-body');
+  const id   = Number(card.id.replace('intim-', ''));
   const aberta = body.style.display !== 'none';
   body.style.display = aberta ? 'none' : 'block';
   if (aberta) expandidas.delete(id); else expandidas.add(id);
 }
 
-function marcarLida(id) {
+async function marcarLida(id) {
   const intim = intimacoesData.find(i => i.id === id);
   if (!intim) return;
-  intim.lida = !intim.lida;
+
+  try {
+    await Api.patch(`/intimacoes/${id}`, { lida: !intim.lida });
+    intim.lida = !intim.lida;
+  } catch (err) {
+    // Se a rota não existir ainda, atualiza só localmente
+    intim.lida = !intim.lida;
+  }
 
   const novas = intimacoesData.filter(i => !i.lida).length;
   const badge = document.getElementById('tab-badge');
-  if (badge) badge.textContent = novas;
+  if (badge) { badge.textContent = novas; badge.style.display = novas > 0 ? 'inline-flex' : 'none'; }
   const badgeSidebar = document.getElementById('badge-intimacoes');
-  if (badgeSidebar) badgeSidebar.textContent = novas;
+  if (badgeSidebar) { badgeSidebar.textContent = novas; badgeSidebar.style.display = novas > 0 ? 'flex' : 'none'; }
 
   renderIntimacoes();
   renderStats();
@@ -204,21 +264,25 @@ function marcarLida(id) {
 }
 
 // ---------- SINCRONIZAR ----------
-document.getElementById('btn-sync').addEventListener('click', function() {
+document.getElementById('btn-sync').addEventListener('click', async function () {
   const btn = this;
   btn.innerHTML = 'Sincronizando...';
   btn.disabled = true;
-  setTimeout(() => {
-    btn.innerHTML = `
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-      </svg>
-      Sincronizar`;
-    btn.disabled = false;
-    document.querySelector('.topbar__sub').textContent = 'Última sincronização: agora';
+  try {
+    await Api.post('/monitoramento/sincronizar', {});
+    await carregarMonitoramento();
+    await carregarIntimacoes();
+    renderStats();
+    renderMonitoramento();
+    renderIntimacoes();
+    document.getElementById('sync-status').textContent = 'Última sincronização: agora';
     Toast.show('Sincronização concluída!', 'success');
-  }, 2000);
+  } catch (err) {
+    Toast.show('Erro ao sincronizar. Tente novamente.', 'error');
+  } finally {
+    btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Sincronizar`;
+    btn.disabled = false;
+  }
 });
 
 // ---------- IMPORTAR ----------
@@ -228,7 +292,7 @@ const placeholders = {
   cnj: '0000000-00.0000.0000.0.00.0000',
 };
 
-document.getElementById('import-type').addEventListener('change', function() {
+document.getElementById('import-type').addEventListener('change', function () {
   document.getElementById('import-input').placeholder = placeholders[this.value];
   document.getElementById('import-input').value = '';
   document.getElementById('import-resultado').innerHTML = '';
@@ -244,18 +308,9 @@ function buscarProcessos() {
   const valor = document.getElementById('import-input').value.trim();
   const res   = document.getElementById('import-resultado');
 
-  if (!valor) {
-    Toast.show('Digite um valor para buscar.', 'error');
-    return;
-  }
+  if (!valor) { Toast.show('Digite um valor para buscar.', 'error'); return; }
 
-  res.innerHTML = `
-    <div class="import-results">
-      <div class="loading-wrap">
-        <div class="spinner"></div>
-        <p>Consultando tribunais...</p>
-      </div>
-    </div>`;
+  res.innerHTML = `<div class="import-results"><div class="loading-wrap"><div class="spinner"></div><p>Consultando tribunais...</p></div></div>`;
 
   setTimeout(() => {
     const lista = buscaSimulada[tipo] || buscaSimulada.oab;
@@ -266,7 +321,6 @@ function buscarProcessos() {
 function renderResultados(lista, tipo, valor) {
   const res = document.getElementById('import-resultado');
   const checados = lista.filter(p => p.checked).length;
-
   res.innerHTML = `
     <div class="import-results">
       <div class="ir-header">
@@ -276,10 +330,7 @@ function renderResultados(lista, tipo, valor) {
       ${lista.map((p, i) => `
         <div class="ir-row">
           <div class="ir-check${p.checked ? ' checked' : ''}" data-index="${i}" onclick="toggleCheck(this, ${i})"></div>
-          <div class="ir-info">
-            <div class="ir-num">${p.num}</div>
-            <div class="ir-tipo">${p.tipo}</div>
-          </div>
+          <div class="ir-info"><div class="ir-num">${p.num}</div><div class="ir-tipo">${p.tipo}</div></div>
           <div class="ir-meta">
             <span class="ir-tribunal">${p.tribunal}</span>
             <span class="pill ${p.statusCls}">${p.status}</span>
@@ -303,21 +354,27 @@ function toggleCheck(el, index) {
 function importar() {
   const sel = document.querySelectorAll('.ir-check.checked').length;
   if (!sel) { Toast.show('Selecione ao menos um processo.', 'error'); return; }
-
   document.getElementById('import-resultado').innerHTML = `
     <div class="import-success">
       <div class="import-success__icon">✓</div>
       <div class="import-success__title">${sel} processo${sel > 1 ? 's' : ''} importado${sel > 1 ? 's' : ''} com sucesso!</div>
       <div class="import-success__sub">O monitoramento automático foi ativado. Você será notificado sobre novas intimações e andamentos.</div>
     </div>`;
-
   Toast.show(`${sel} processo${sel > 1 ? 's' : ''} importado${sel > 1 ? 's' : ''}!`, 'success');
 }
 
 // ---------- INIT ----------
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await carregarMonitoramento();
+  await carregarIntimacoes();
   renderStats();
   renderMonitoramento();
   renderIntimacoes();
-  Notifications.init('btn-notificacoes');
+
+  // Atualiza badge de intimações
+  const novas = intimacoesData.filter(i => !i.lida).length;
+  const badge = document.getElementById('tab-badge');
+  if (badge && novas > 0) { badge.textContent = novas; badge.style.display = 'inline-flex'; }
+
+  if (typeof Notifications !== 'undefined') Notifications.init('btn-notificacoes');
 });
