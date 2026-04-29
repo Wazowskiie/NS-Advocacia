@@ -2,7 +2,7 @@
 // NS Advocacia — Processo Detalhe
 // ============================================================
 const params = new URLSearchParams(window.location.search);
-const processoId = Number(params.get('id'));
+const processoId = (params.get('id'));
 
 const procStatusMap = {
   'ATIVO':        { cls: 'pill--progress', label: 'Em andamento' },
