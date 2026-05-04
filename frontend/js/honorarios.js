@@ -149,7 +149,7 @@ function renderTabela(lista) {
   tbody.querySelectorAll('.btn-detalhes').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      window.location.href = `honorario-detalhe.html?id=${btn.dataset.id}`;
+      window.location.href = `honorario-detalhes.html?id=${btn.dataset.id}`;
     });
   });
 
