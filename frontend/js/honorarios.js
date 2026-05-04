@@ -8,7 +8,6 @@ const honorariosStatusMap = {
   'PAGO':      { cls: 'pill--progress', label: 'Pago'      },
   'ATRASADO':  { cls: 'pill--urgent',   label: 'Em atraso' },
   'CANCELADO': { cls: 'pill--waiting',  label: 'Cancelado' },
-  // Compatibilidade
   'Pago':      { cls: 'pill--progress', label: 'Pago'      },
   'Pendente':  { cls: 'pill--waiting',  label: 'Pendente'  },
   'Em atraso': { cls: 'pill--urgent',   label: 'Em atraso' },
@@ -34,7 +33,7 @@ async function carregarHonorarios() {
       cor:      _cores[i % _cores.length],
       tipo:     h.categoria || h.tipo || 'Fixo',
       valor:    Number(h.valor) || 0,
-      venc:     h.dataVencimento ? new Date(h.dataVencimento).toLocaleDateString('pt-BR') : '—',
+      venc:     h.dataVencimento ? new Date(h.dataVencimento.replace('Z','')).toLocaleDateString('pt-BR') : '—',
       status:   h.status || 'PENDENTE',
     }));
   } catch (err) {
@@ -133,7 +132,6 @@ function renderTabela(lista) {
   }
   tbody.innerHTML = lista.map(h => {
     const s = honorariosStatusMap[h.status] || honorariosStatusMap['Pendente'];
-    const podePagar = h.status !== 'PAGO' && h.status !== 'Pago';
     return `<div class="table-row">
       <div><div class="t-proc">${h.processo}</div><div class="t-sub">${h.num}</div></div>
       <div class="t-cell">${h.cliente.split(' ').slice(0,2).join(' ')}</div>
@@ -142,187 +140,70 @@ function renderTabela(lista) {
       <div class="t-cell">${h.venc}</div>
       <div><span class="pill ${s.cls}">${s.label}</span></div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn-det btn-editar" data-id="${h.id}">Editar</button>
-        ${podePagar ? `<button class="btn-pagar" data-id="${h.id}" data-valor="${h.valor}" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #2d7a52;background:#e8f5ee;color:#085041;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">✓ Pago</button>` : ''}
+        <button class="btn-det btn-detalhes" data-id="${h.id}">Detalhes</button>
+        <button class="btn-excluir" data-id="${h.id}" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid #e8b4b0;background:#fdf0ef;color:#c0392b;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Excluir</button>
       </div>
     </div>`;
   }).join('');
 
-  // FIX: lê o id pelo dataset do botão, não do data-id da row
-  tbody.querySelectorAll('.btn-pagar').forEach(btn => {
+  tbody.querySelectorAll('.btn-detalhes').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const id    = btn.dataset.id;
-      const valor = Number(btn.dataset.valor);
-      confirmarPagamento(id, valor);
+      window.location.href = `honorario-detalhe.html?id=${btn.dataset.id}`;
     });
   });
 
-  tbody.querySelectorAll('.btn-editar').forEach(btn => {
+  tbody.querySelectorAll('.btn-excluir').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       const id = btn.dataset.id;
       const item = honorariosData.find(h => h.id === id);
-      if (item) abrirModalEdicao(item);
+      confirmarExclusao(id, item);
     });
   });
 
   count.textContent = `${lista.length} lançamento${lista.length !== 1 ? 's' : ''}`;
 }
 
-// ---------- CONFIRMAÇÃO DE PAGAMENTO ----------
-function confirmarPagamento(id, valor) {
-  // Cria overlay de confirmação próprio
-  const existing = document.getElementById('confirm-pagar-overlay');
+// ---------- CONFIRMAÇÃO DE EXCLUSÃO ----------
+function confirmarExclusao(id, item) {
+  const existing = document.getElementById('confirm-excluir-overlay');
   if (existing) existing.remove();
 
   const overlay = document.createElement('div');
-  overlay.id = 'confirm-pagar-overlay';
+  overlay.id = 'confirm-excluir-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000';
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <div style="width:36px;height:36px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="16" height="16" fill="none" stroke="#2d7a52" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <div style="width:36px;height:36px;border-radius:50%;background:#fdf0ef;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" fill="none" stroke="#c0392b" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </div>
         <div>
-          <div style="font-size:14px;font-weight:500;color:#1c1c1a">Marcar como pago?</div>
-          <div style="font-size:12px;color:#9a9a94;margin-top:2px">Confirma o recebimento de ${formatMoeda(valor)}?</div>
+          <div style="font-size:14px;font-weight:500;color:#1c1c1a">Excluir lançamento?</div>
+          <div style="font-size:12px;color:#9a9a94;margin-top:2px">${item ? formatMoeda(item.valor) + ' · ' + item.venc : 'Esta ação não pode ser desfeita.'}</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
-        <button id="confirm-pagar-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
-        <button id="confirm-pagar-ok" style="padding:8px 18px;border-radius:8px;border:none;background:#1a3a2a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Confirmar</button>
+        <button id="confirm-excluir-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button id="confirm-excluir-ok" style="padding:8px 18px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Excluir</button>
       </div>
     </div>`;
 
   document.body.appendChild(overlay);
 
-  document.getElementById('confirm-pagar-cancel').addEventListener('click', () => overlay.remove());
+  document.getElementById('confirm-excluir-cancel').addEventListener('click', () => overlay.remove());
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 
-  document.getElementById('confirm-pagar-ok').addEventListener('click', async () => {
+  document.getElementById('confirm-excluir-ok').addEventListener('click', async () => {
     overlay.remove();
     try {
-      await Api.patch(`/financeiro/${id}`, { status: 'PAGO' });
-      const item = honorariosData.find(h => h.id === id);
-      if (item) item.status = 'PAGO';
-      Toast.show('Honorário marcado como pago!', 'success');
+      await Api.delete(`/financeiro/${id}`);
+      honorariosData = honorariosData.filter(h => h.id !== id);
+      Toast.show('Lançamento excluído.', 'success');
       aplicarFiltros();
     } catch (err) {
-      Toast.show('Erro ao atualizar status.', 'error');
-    }
-  });
-}
-
-// ---------- MODAL EDIÇÃO ----------
-function abrirModalEdicao(item) {
-  const existing = document.getElementById('modal-edicao-overlay');
-  if (existing) existing.remove();
-
-  const overlay = document.createElement('div');
-  overlay.id = 'modal-edicao-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000';
-
-  const statusOpts = ['PENDENTE','PAGO','ATRASADO','Parcelado'].map(s =>
-    `<option value="${s}" ${item.status === s ? 'selected' : ''}>${honorariosStatusMap[s]?.label || s}</option>`
-  ).join('');
-
-  const tipoOpts = ['Fixo','% causa','Por hora','RECEITA'].map(t =>
-    `<option value="${t}" ${item.tipo === t ? 'selected' : ''}>${t}</option>`
-  ).join('');
-
-  overlay.innerHTML = `
-    <div style="background:#fff;border-radius:16px;width:480px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:0.5px solid rgba(0,0,0,0.08)">
-        <h3 style="font-size:15px;font-weight:500;color:#1c1c1a">Editar Lançamento</h3>
-        <button id="modal-edicao-close" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#6b6b67;cursor:pointer;background:none;border:none">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <label style="font-size:11.5px;font-weight:500;color:#6b6b67">Valor (R$)</label>
-            <input id="edit-valor" type="number" value="${item.valor}" min="0" step="0.01"
-              style="padding:8px 12px;border:0.5px solid rgba(0,0,0,0.14);border-radius:8px;font-size:13px;color:#1c1c1a;font-family:'DM Sans',sans-serif" />
-          </div>
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <label style="font-size:11.5px;font-weight:500;color:#6b6b67">Status</label>
-            <select id="edit-status"
-              style="padding:8px 12px;border:0.5px solid rgba(0,0,0,0.14);border-radius:8px;font-size:13px;color:#1c1c1a;font-family:'DM Sans',sans-serif">
-              ${statusOpts}
-            </select>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <label style="font-size:11.5px;font-weight:500;color:#6b6b67">Tipo</label>
-            <select id="edit-tipo"
-              style="padding:8px 12px;border:0.5px solid rgba(0,0,0,0.14);border-radius:8px;font-size:13px;color:#1c1c1a;font-family:'DM Sans',sans-serif">
-              ${tipoOpts}
-            </select>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <label style="font-size:11.5px;font-weight:500;color:#6b6b67">Vencimento</label>
-            <input id="edit-venc" type="date"
-              value="${item.venc !== '—' ? item.venc.split('/').reverse().join('-') : ''}"
-              style="padding:8px 12px;border:0.5px solid rgba(0,0,0,0.14);border-radius:8px;font-size:13px;color:#1c1c1a;font-family:'DM Sans',sans-serif" />
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;padding:16px 24px;border-top:0.5px solid rgba(0,0,0,0.08);justify-content:flex-end">
-        <button id="modal-edicao-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
-        <button id="modal-edicao-save" style="padding:8px 24px;border-radius:8px;border:none;background:#1a3a2a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Salvar</button>
-      </div>
-    </div>`;
-
-  document.body.appendChild(overlay);
-
-  const fechar = () => overlay.remove();
-  document.getElementById('modal-edicao-close').addEventListener('click', fechar);
-  document.getElementById('modal-edicao-cancel').addEventListener('click', fechar);
-  overlay.addEventListener('click', e => { if (e.target === overlay) fechar(); });
-
-  document.getElementById('modal-edicao-save').addEventListener('click', async () => {
-    const valor  = parseFloat(document.getElementById('edit-valor').value);
-    const status = document.getElementById('edit-status').value;
-    const tipo   = document.getElementById('edit-tipo').value;
-    const venc   = document.getElementById('edit-venc').value;
-
-    if (isNaN(valor) || valor <= 0) {
-      Toast.show('Informe um valor válido.', 'error');
-      return;
-    }
-
-    const btn = document.getElementById('modal-edicao-save');
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
-
-    try {
-      await Api.patch(`/financeiro/${item.id}`, {
-        valor,
-        status,
-        categoria: tipo,
-        dataVencimento: venc || undefined,
-      });
-
-      // Atualiza localmente
-      const local = honorariosData.find(h => h.id === item.id);
-      if (local) {
-        local.valor  = valor;
-        local.status = status;
-        local.tipo   = tipo;
-        local.venc   = venc ? new Date(venc + 'T12:00:00').toLocaleDateString('pt-BR') : '—';
-      }
-
-      Toast.show('Lançamento atualizado!', 'success');
-      fechar();
-      aplicarFiltros();
-    } catch (err) {
-      Toast.show('Erro ao salvar alterações.', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Salvar';
+      Toast.show('Erro ao excluir lançamento.', 'error');
     }
   });
 }
@@ -357,7 +238,6 @@ async function salvarLancamento() {
   const processo = document.getElementById('f-processo').value.trim();
   const cliente  = document.getElementById('f-cliente').value.trim();
   const valor    = parseFloat(document.getElementById('f-valor').value);
-  const resp     = document.getElementById('f-resp-modal')?.value;
 
   if (!processo || !cliente || isNaN(valor) || valor <= 0) {
     Toast.show('Preencha processo, cliente e valor.', 'error');
