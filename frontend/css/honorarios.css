@@ -127,9 +127,9 @@ input, select { font-family: inherit; }
 
 /* ===== TABELA ===== */
 .table-panel {}
-.table-head { display: grid; grid-template-columns: 1.8fr 1.3fr 0.9fr 0.9fr 0.85fr 0.9fr 80px; padding: 10px 20px; background: var(--bg2); border-bottom: 0.5px solid var(--bd); }
+.table-head { display: grid; grid-template-columns: 1.8fr 1.3fr 0.9fr 0.9fr 0.85fr 0.9fr 160px; padding: 10px 20px; background: var(--bg2); border-bottom: 0.5px solid var(--bd); }
 .table-head span { font-size: 9.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--t3); font-weight: 500; }
-.table-row { display: grid; grid-template-columns: 1.8fr 1.3fr 0.9fr 0.9fr 0.85fr 0.9fr 80px; padding: 12px 20px; border-bottom: 0.5px solid var(--bd); align-items: center; transition: background 0.1s; }
+.table-row { display: grid; grid-template-columns: 1.8fr 1.3fr 0.9fr 0.9fr 0.85fr 0.9fr 160px; padding: 12px 20px; border-bottom: 0.5px solid var(--bd); align-items: center; transition: background 0.1s; }
 .table-row:last-child { border-bottom: none; }
 .table-row:hover { background: rgba(61,122,82,0.03); }
 .t-proc { font-size: 12.5px; font-weight: 500; color: var(--t1); }
@@ -163,4 +163,4 @@ input, select { font-family: inherit; }
 .modal-footer .btn--primary { padding: 9px 24px; }
 
 /* ===== EMPTY STATE ===== */
-.empty-state { padding: 40px; text-align: center; color: var(--t3); font-size: 13px; }  
+.empty-state { padding: 40px; text-align: center; color: var(--t3); font-size: 13px; }
