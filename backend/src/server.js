@@ -6,6 +6,7 @@ import jwt from '@fastify/jwt'
 // Routes
 import authRoutes from './routes/auth.js'
 import usuarioRoutes from './routes/usuarios.js'
+import custasRoutes from './routes/custas.js'
 import clienteRoutes from './routes/clientes.js'
 import processoRoutes from './routes/processos.js'
 import eventoRoutes from './routes/eventos.js'
@@ -37,6 +38,7 @@ app.decorate('authenticate', async (request, reply) => {
 app.register(authRoutes, { prefix: '/auth' })
 app.register(usuarioRoutes, { prefix: '/usuarios' })
 app.register(clienteRoutes, { prefix: '/clientes' })
+app.register(custasRoutes, { prefix: '/custas' })
 app.register(processoRoutes, { prefix: '/processos' })
 app.register(eventoRoutes, { prefix: '/eventos' })
 app.register(financeiroRoutes, { prefix: '/financeiro' })
