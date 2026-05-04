@@ -2,7 +2,7 @@
 // NS Advocacia — Cliente Detalhe
 // ============================================================
 const params = new URLSearchParams(window.location.search);
-const clienteId = Number(params.get('id'));
+const clienteId = params.get('id');
 const sMap = {
   'ATIVO':{cls:'pill--progress',label:'Em andamento'},'ARQUIVADO':{cls:'pill--waiting',label:'Arquivado'},
   'ENCERRADO':{cls:'pill--waiting',label:'Encerrado'},'SUSPENSO':{cls:'pill--urgent',label:'Suspenso'},
