@@ -33,6 +33,7 @@ async function carregarEventos() {
   const fim    = semana[6].toISOString().split('T')[0];
   try {
     const data = await Api.get(`/eventos?inicio=${inicio}&fim=${fim}`);
+    console.log('Eventos da API:', data); // ← adiciona aqui
     eventosData = (data || []).map(e => {
       const ini  = new Date(e.dataInicio);
       const fim2 = e.dataFim ? new Date(e.dataFim) : new Date(ini.getTime() + 3600000);
