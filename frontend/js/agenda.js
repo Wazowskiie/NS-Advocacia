@@ -33,10 +33,10 @@ async function carregarEventos() {
   const fim    = semana[6].toISOString().split('T')[0];
   try {
     const data = await Api.get(`/eventos?inicio=${inicio}&fim=${fim}`);
-    console.log('Eventos da API:', data); // ← adiciona aqui
     eventosData = (data || []).map(e => {
-      const ini  = new Date(e.dataInicio);
-      const fim2 = e.dataFim ? new Date(e.dataFim) : new Date(ini.getTime() + 3600000);
+      // FIX: remove o 'Z' para evitar conversão de fuso horário (UTC → local)
+      const ini  = new Date(e.dataInicio.replace('Z', ''));
+      const fim2 = e.dataFim ? new Date(e.dataFim.replace('Z', '')) : new Date(ini.getTime() + 3600000);
       const diaSemana = (ini.getDay() + 6) % 7;
       return {
         id:     e.id,
@@ -96,12 +96,12 @@ function renderGrid(semana, hoje, filtroResp) {
   }).join('');
   grid.innerHTML = timeCol + diasCols;
   grid.querySelectorAll('.event').forEach(el => {
-  el.addEventListener('click', () => {
-    const id = el.dataset.id;
-    const ev = eventosData.find(e => String(e.id) === id);
-    if (ev) abrirModalDetalhes(ev);
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const ev = eventosData.find(e => String(e.id) === id);
+      if (ev) abrirModalDetalhes(ev);
+    });
   });
-});
 }
 
 function eventoHTML(ev) {
