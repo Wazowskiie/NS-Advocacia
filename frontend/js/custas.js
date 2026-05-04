@@ -4,6 +4,11 @@
 // ============================================================
 
 const custasStatusMap = {
+  'PENDENTE':    { cls: 'pill--waiting',  label: 'Pendente'    },
+  'CANCELADO':   { cls: 'pill--info',     label: 'Reembolsado' },
+  'PAGO':        { cls: 'pill--progress', label: 'Pago'        },
+  'ATRASADO':    { cls: 'pill--urgent',   label: 'Em atraso'   },
+  // Compatibilidade
   'Pendente':    { cls: 'pill--waiting',  label: 'Pendente'    },
   'Reembolsado': { cls: 'pill--info',     label: 'Reembolsado' },
   'Pago':        { cls: 'pill--progress', label: 'Pago'        },
@@ -32,11 +37,14 @@ async function carregarCustas() {
       processo: c.processo?.titulo || '—',
       num:      c.processo?.numero || '—',
       cliente:  c.cliente?.nome || c.processo?.cliente?.nome || '—',
-      tipo:     c.tipo || 'Outras despesas',
+      // FIX: tipo real está em 'categoria', não em 'tipo'
+      tipo:     c.categoria || 'Outras despesas',
       valor:    Number(c.valor) || 0,
-      data:     c.data ? new Date(c.data).toLocaleDateString('pt-BR') : '—',
-      pagador:  c.pagador || 'Escritório',
-      status:   c.status || 'Pendente',
+      // FIX: data está em 'dataVencimento', não em 'data'
+      data:     c.dataVencimento ? new Date(c.dataVencimento.replace('Z','')).toLocaleDateString('pt-BR') : '—',
+      // FIX: pagador está na descrição (não existe campo separado no backend)
+      pagador:  'Escritório',
+      status:   c.status || 'PENDENTE',
     }));
   } catch (err) {
     console.error('Erro ao carregar custas:', err);
@@ -47,8 +55,8 @@ async function carregarCustas() {
 function renderCards(lista) {
   const total      = lista.reduce((s, c) => s + c.valor, 0);
   const escritorio = lista.filter(c => c.pagador === 'Escritório').reduce((s, c) => s + c.valor, 0);
-  const pendente   = lista.filter(c => c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
-  const reemb      = lista.filter(c => c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
+  const pendente   = lista.filter(c => c.status === 'PENDENTE' || c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
+  const reemb      = lista.filter(c => c.status === 'CANCELADO' || c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
 
   document.getElementById('summary-cards').innerHTML = `
     <div class="s-card s-card--primary">
@@ -76,8 +84,8 @@ function renderPagador(lista) {
   const total      = lista.reduce((s, c) => s + c.valor, 0) || 1;
   const escritorio = lista.filter(c => c.pagador === 'Escritório').reduce((s, c) => s + c.valor, 0);
   const cliente    = lista.filter(c => c.pagador === 'Cliente').reduce((s, c) => s + c.valor, 0);
-  const pendente   = lista.filter(c => c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
-  const reemb      = lista.filter(c => c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
+  const pendente   = lista.filter(c => c.status === 'PENDENTE' || c.status === 'Pendente').reduce((s, c) => s + c.valor, 0);
+  const reemb      = lista.filter(c => c.status === 'CANCELADO' || c.status === 'Reembolsado').reduce((s, c) => s + c.valor, 0);
   const pctEscrit  = Math.round((escritorio / total) * 100);
   const pctCliente = Math.round((cliente / total) * 100);
   const pctPend    = escritorio > 0 ? Math.round((pendente / escritorio) * 100) : 0;
@@ -127,10 +135,10 @@ function renderTabela(lista) {
     return;
   }
   tbody.innerHTML = lista.map(c => {
-    const s = custasStatusMap[c.status] || custasStatusMap['Pendente'];
+    const s = custasStatusMap[c.status] || custasStatusMap['PENDENTE'];
     const pgCls = c.pagador === 'Escritório' ? 'pagador-tag--escrit' : 'pagador-tag--cliente';
-    const podeReembolsar = c.pagador === 'Escritório' && c.status === 'Pendente';
-    return `<div class="table-row" data-id="${c.id}">
+    const podeReembolsar = c.status === 'PENDENTE' || c.status === 'Pendente';
+    return `<div class="table-row">
       <div><div class="t-proc">${c.processo}</div><div class="t-sub">${c.num}</div></div>
       <div class="t-cell">${c.cliente.split(' ').slice(0,2).join(' ')}</div>
       <div class="t-cell">${c.tipo}</div>
@@ -139,20 +147,28 @@ function renderTabela(lista) {
       <div><span class="pagador-tag ${pgCls}">${c.pagador}</span></div>
       <div><span class="pill ${s.cls}">${s.label}</span></div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn-ver">Ver</button>
+        <button class="btn-det btn-ver" data-id="${c.id}">Ver</button>
         ${podeReembolsar ? `<button class="btn-reembolsar" data-id="${c.id}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #2563a8;background:#e8f0fb;color:#0c447c;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">↩ Reemb.</button>` : ''}
+        <button class="btn-excluir-custa" data-id="${c.id}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #e8b4b0;background:#fdf0ef;color:#c0392b;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Excluir</button>
       </div>
     </div>`;
   }).join('');
 
+  tbody.querySelectorAll('.btn-ver').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      window.location.href = `custa-detalhe.html?id=${btn.dataset.id}`;
+    });
+  });
+
   tbody.querySelectorAll('.btn-reembolsar').forEach(btn => {
     btn.addEventListener('click', async e => {
       e.stopPropagation();
-      const id = Number(btn.dataset.id);
+      const id = btn.dataset.id;
       try {
-        await Api.patch(`/custas/${id}`, { status: 'Reembolsado' });
+        await Api.patch(`/custas/${id}`, { status: 'CANCELADO' });
         const item = custasData.find(c => c.id === id);
-        if (item) item.status = 'Reembolsado';
+        if (item) item.status = 'CANCELADO';
         Toast.show('Custa marcada como reembolsada!', 'info');
         aplicarFiltros();
       } catch (err) {
@@ -161,7 +177,56 @@ function renderTabela(lista) {
     });
   });
 
+  tbody.querySelectorAll('.btn-excluir-custa').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const item = custasData.find(c => c.id === id);
+      confirmarExclusao(id, item);
+    });
+  });
+
   count.textContent = `${lista.length} lançamento${lista.length !== 1 ? 's' : ''}`;
+}
+
+function confirmarExclusao(id, item) {
+  const existing = document.getElementById('confirm-excluir-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'confirm-excluir-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:#fdf0ef;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" fill="none" stroke="#c0392b" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:#1c1c1a">Excluir custa?</div>
+          <div style="font-size:12px;color:#9a9a94;margin-top:2px">${item ? formatMoeda(item.valor) + ' · ' + item.tipo : 'Esta ação não pode ser desfeita.'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+        <button id="confirm-excluir-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button id="confirm-excluir-ok" style="padding:8px 18px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Excluir</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('confirm-excluir-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('confirm-excluir-ok').addEventListener('click', async () => {
+    overlay.remove();
+    try {
+      await Api.delete(`/custas/${id}`);
+      custasData = custasData.filter(c => c.id !== id);
+      Toast.show('Custa excluída.', 'success');
+      aplicarFiltros();
+    } catch (err) {
+      Toast.show('Erro ao excluir custa.', 'error');
+    }
+  });
 }
 
 function aplicarFiltros() {
@@ -205,7 +270,7 @@ function limparModal() {
   });
   document.getElementById('f-tipo-modal').value    = 'Taxa judiciária';
   document.getElementById('f-pagador-modal').value = 'Escritório';
-  document.getElementById('f-status-modal').value  = 'Pendente';
+  document.getElementById('f-status-modal').value  = 'PENDENTE';
 }
 
 async function salvarCusta() {
