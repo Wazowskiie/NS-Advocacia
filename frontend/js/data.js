@@ -21,7 +21,7 @@ let processos = [];
 async function carregarProcessos(filtros = {}) {
   try {
     const params = new URLSearchParams(filtros).toString();
-    const dados = await Api.get(`/processos${params ? '?' + params : ''}`);
+    const dados = await Api.get(`/processos?status=ATIVO${params ? '&' + params : ''}`);
     if (!dados) return [];
 
     // Normaliza para o formato que o render.js já conhece

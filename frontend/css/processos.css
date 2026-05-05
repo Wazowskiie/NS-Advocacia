@@ -86,7 +86,7 @@
 
 .proc-table-head {
   display: grid;
-  grid-template-columns: 1.4fr 1.3fr 1.2fr 1fr 0.9fr 0.85fr 1fr 72px;
+  grid-template-columns: 1.4fr 1.3fr 1.2fr 1fr 0.9fr 0.85fr 1fr 160px;
   padding: 10px 28px;
   background: var(--bg-subtle);
   border-bottom: 0.5px solid var(--border);
@@ -116,7 +116,7 @@
 
 .proc-row {
   display: grid;
-  grid-template-columns: 1.4fr 1.3fr 1.2fr 1fr 0.9fr 0.85fr 1fr 72px;
+  grid-template-columns: 1.4fr 1.3fr 1.2fr 1fr 0.9fr 0.85fr 1fr 160px;
   padding: 12px 28px;
   border-bottom: 0.5px solid var(--border);
   align-items: center;

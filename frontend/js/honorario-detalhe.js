@@ -23,11 +23,11 @@ async function init() {
   try {
     _hon = await Api.get(`/financeiro/${honId}`); // FIX: era __hon (dois underlines)
   } catch (err) {
-    document.querySelector('.main').innerHTML = '<div style="padding:48px;text-align:center;color:#9a9a94">Honorário não encontrado.</div>';
+    window.location.href = 'honorarios.html'; return;
     return;
   }
   if (!_hon) {
-    document.querySelector('.main').innerHTML = '<div style="padding:48px;text-align:center;color:#9a9a94">Honorário não encontrado.</div>';
+    window.location.href = 'honorarios.html'; return;
     return;
   }
 
