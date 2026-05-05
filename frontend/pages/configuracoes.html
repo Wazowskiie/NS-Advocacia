@@ -60,10 +60,10 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <div class="avatar avatar--sm">RS</div>
+        <div class="avatar avatar--sm" id="sidebar-avatar"></div>
         <div class="sidebar-user">
-          <p class="sidebar-user__name">Rafael Silva</p>
-          <p class="sidebar-user__role">Advogado Sócio</p>
+          <p class="sidebar-user__name" id="sidebar-nome"></p>
+          <p class="sidebar-user__role" id="sidebar-cargo"></p>
         </div>
       </div>
     </aside>
@@ -93,36 +93,35 @@
             <div class="cfg-card">
               <div class="profile-hero">
                 <div class="profile-avatar" id="profile-avatar">
-                  RS
                   <div class="profile-avatar__edit">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </div>
                 </div>
                 <div>
-                  <div class="profile-name" id="profile-name-display">Rafael Silva</div>
-                  <div class="profile-role">Advogado Sócio</div>
-                  <div class="profile-since">Membro desde Jan 2023</div>
+                  <div class="profile-name" id="profile-name-display"></div>
+                  <div class="profile-role" id="profile-role-display"></div>
+                  <div class="profile-since" id="profile-since-display"></div>
                 </div>
               </div>
               <div class="field-row">
                 <span class="field-label">Nome completo</span>
-                <input class="field-input" id="f-nome" value="Rafael Silva" />
+                <input class="field-input" id="f-nome" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">E-mail</span>
-                <input class="field-input" id="f-email" type="email" value="rafael.silva@lexdesk.com.br" />
+                <input class="field-input" id="f-email" type="email" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">Telefone</span>
-                <input class="field-input" id="f-telefone" value="(11) 99999-0001" />
+                <input class="field-input" id="f-telefone" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">OAB</span>
-                <input class="field-input" id="f-oab" value="SP 123.456" />
+                <input class="field-input" id="f-oab" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">Cargo</span>
-                <input class="field-input" id="f-cargo" value="Advogado Sócio" />
+                <input class="field-input" id="f-cargo" value="" />
               </div>
             </div>
           </div>
@@ -153,7 +152,7 @@
             <div class="cfg-card">
               <div class="logo-upload">
                 <div class="logo-box" id="logo-box">
-                  <span>LD</span>
+                  <span>NS</span>
                 </div>
                 <div class="logo-info">
                   <p class="logo-info__title">Logo do escritório</p>
@@ -164,15 +163,15 @@
               </div>
               <div class="field-row">
                 <span class="field-label">Nome do escritório</span>
-                <input class="field-input" id="f-escritorio-nome" value="Silva & Associados Advocacia" />
+                <input class="field-input" id="f-escritorio-nome" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">CNPJ</span>
-                <input class="field-input" id="f-cnpj" value="12.345.678/0001-90" />
+                <input class="field-input" id="f-cnpj" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">OAB Escritório</span>
-                <input class="field-input" id="f-oab-esc" value="SP 12.345" />
+                <input class="field-input" id="f-oab-esc" value="" />
               </div>
             </div>
           </div>
@@ -182,19 +181,19 @@
             <div class="cfg-card">
               <div class="field-row">
                 <span class="field-label">Endereço</span>
-                <input class="field-input" id="f-endereco" value="Av. Paulista, 1000 — Sala 42" />
+                <input class="field-input" id="f-endereco" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">Cidade / Estado</span>
-                <input class="field-input" id="f-cidade" value="São Paulo — SP" />
+                <input class="field-input" id="f-cidade" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">CEP</span>
-                <input class="field-input" id="f-cep" value="01310-100" />
+                <input class="field-input" id="f-cep" value="" />
               </div>
               <div class="field-row">
                 <span class="field-label">Telefone</span>
-                <input class="field-input" id="f-tel-esc" value="(11) 3000-0001" />
+                <input class="field-input" id="f-tel-esc" value="" />
               </div>
             </div>
           </div>
@@ -203,12 +202,10 @@
 
         <!-- EQUIPE -->
         <div class="cfg-pane" id="pane-equipe">
-
           <div class="cfg-section">
             <h3>Membros ativos</h3>
             <div class="cfg-card" id="equipe-lista"></div>
           </div>
-
         </div>
 
         <!-- NOTIFICAÇÕES -->
