@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import prisma from '../lib/prisma.js'
 
 export default async function usuarioRoutes(app) {
-  const opts =  onRequest: [app.authenticate] }: [app.authenticate] }
+  const opts = { onRequest: [app.authenticate] }
 
   app.get('/', opts, async (request) => {
     const { escritorioId } = request.user
@@ -44,4 +44,18 @@ export default async function usuarioRoutes(app) {
     })
     return { message: 'Senha atualizada' }
   })
+
+  app.put('/:id', opts, async (request, reply) => {
+    const { id } = request.user
+    if (id !== request.params.id) return reply.status(403).send({ error: 'Sem permissão' })
+
+    const { nome, email, oab, cargo, telefone } = request.body
+    const atualizado = await prisma.usuario.update({
+      where: { id: request.params.id },
+      data: { nome, email, oab, cargo, telefone },
+      select: { id: true, nome: true, email: true, oab: true, cargo: true }
+    })
+    return atualizado
+  })
+
 }
