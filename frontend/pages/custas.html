@@ -49,10 +49,11 @@
       <header class="topbar">
         <div class="topbar__left">
           <h2 class="topbar__title">Custas</h2>
-          <span class="topbar__sub" id="ano-label">Ano de 2025</span>
+          <span class="topbar__sub" id="ano-label">Ano de 2026</span>
         </div>
         <div class="topbar__right">
           <select class="filter-select" id="f-ano">
+            <option value="2026" selected>2026</option>
             <option value="2025">2025</option>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
@@ -97,7 +98,7 @@
               <select class="filter-select" id="f-status">
                 <option value="">Todos status</option>
                 <option value="Pendente">Pendente</option>
-                <option value="Reembolsado">Reembolsado</option>
+                <option value="CANCELADO">Reembolsado</option>
                 <option value="Pago">Pago</option>
               </select>
               <button class="btn-clear" id="btn-limpar">Limpar</button>
@@ -156,9 +157,9 @@
           <div class="form-group">
             <label>Status</label>
             <select id="f-status-modal">
-              <option value="Pendente">Pendente reembolso</option>
-              <option value="Reembolsado">Reembolsado</option>
-              <option value="Pago">Pago pelo cliente</option>
+              <option value="PENDENTE">Pendente reembolso</option>
+              <option value="CANCELADO">Reembolsado</option>
+              <option value="PAGO">Pago pelo cliente</option>
             </select>
           </div>
         </div>

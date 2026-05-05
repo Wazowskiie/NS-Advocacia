@@ -25,7 +25,7 @@ async function carregarProcessosData(filtros = {}) {
     if (filtros.clienteId) params.append('clienteId', filtros.clienteId);
 
     const query = params.toString();
-    const dados = await Api.get(`/processos${query ? '?' + query : ''}`);
+    const dados = await Api.get(`/processos?status=ATIVO${query ? '&' + query : ''}`);
     if (!dados) return [];
 
     // Normaliza para o formato que processos.js já conhece
