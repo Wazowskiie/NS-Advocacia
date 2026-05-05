@@ -22,34 +22,22 @@ function renderTabela(lista) {
   tbody.innerHTML = `<div class="proc-tbody-scroll">${lista.map(p => rowHTML(p)).join("")}</div>`;
 
   tbody.querySelectorAll(".proc-row").forEach(row => {
-    row.addEventListener("click", () => abrirPainel(Number(row.dataset.id)));
+    row.addEventListener("click", () => abrirPainel(row.dataset.id));
   });
 
   tbody.querySelectorAll(".btn-ver").forEach(btn => {
     btn.addEventListener("click", e => {
       e.stopPropagation();
-      abrirPainel(Number(btn.dataset.id));
+      window.location.href = `processo-detalhe.html?id=${btn.dataset.id}`;
     });
   });
 
   tbody.querySelectorAll('.btn-excluir').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const id = Number(btn.dataset.id);
-      const proc = processosData.find(p => p.id === id);
-      if (!proc) return;
-      Confirm.show(
-        'Excluir processo?',
-        `O processo "${proc.tipo}" de ${proc.cliente} será removido permanentemente.`,
-        () => {
-          const idx = processosData.findIndex(p => p.id === id);
-          if (idx > -1) processosData.splice(idx, 1);
-          const badge = document.getElementById('badge-processos');
-          if (badge) badge.textContent = processosData.length;
-          Toast.show('Processo excluído.', 'warning');
-          aplicarFiltros();
-        }
-      );
+      const id = btn.dataset.id;
+      const proc = processosData.find(p => String(p.id) === String(id));
+      confirmarExclusao(id, proc);
     });
   });
 
@@ -69,14 +57,59 @@ function rowHTML(p) {
       <div><span class="status-pill ${s.cls}">${s.label}</span></div>
       <div class="proc-prazo${p.prazoUrgente ? " proc-prazo--urgent" : ""}">${p.prazo}</div>
       <div class="proc-vara">${p.vara}</div>
-      <button class="btn-ver" onclick="window.location.href='processo-detalhe.html?id=${p.id}'">Abrir</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn-ver" data-id="${p.id}">Abrir</button>
+        <button class="btn-excluir" data-id="${p.id}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #e8b4b0;background:#fdf0ef;color:#c0392b;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Excluir</button>
+      </div>
     </div>`;
+}
+
+// ---------- CONFIRMAÇÃO DE EXCLUSÃO ----------
+function confirmarExclusao(id, proc) {
+  const existing = document.getElementById('confirm-excluir-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'confirm-excluir-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:#fdf0ef;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" fill="none" stroke="#c0392b" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:#1c1c1a">Excluir processo?</div>
+          <div style="font-size:12px;color:#9a9a94;margin-top:2px">${proc ? proc.tipo + ' · ' + proc.cliente : 'Esta ação não pode ser desfeita.'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+        <button id="confirm-excluir-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button id="confirm-excluir-ok" style="padding:8px 18px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Excluir</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('confirm-excluir-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('confirm-excluir-ok').addEventListener('click', async () => {
+    overlay.remove();
+    try {
+      await Api.delete(`/processos/${id}`);
+      Toast.show('Processo excluído.', 'success');
+      await carregarProcessosData();
+      aplicarFiltros();
+    } catch (err) {
+      Toast.show('Erro ao excluir processo.', 'error');
+    }
+  });
 }
 
 // ---------- PAINEL LATERAL ----------
 function abrirPainel(id) {
   selectedId = id;
-  const p = processosData.find(x => x.id === id);
+  const p = processosData.find(x => String(x.id) === String(id));
+  if (!p) return;
   const s = statusMap[p.status] || { cls: 'pill--progress', label: p.status };
 
   document.getElementById("sp-empty").style.display = "none";
@@ -106,8 +139,7 @@ function abrirPainel(id) {
     <div class="sp-actions">
       <button class="btn btn--primary" onclick="window.location.href='processo-detalhe.html?id=${p.id}'">Abrir processo completo</button>
       <button class="btn btn--secondary">Adicionar andamento</button>
-    </div>
-  `;
+    </div>`;
 
   aplicarFiltros();
 }
@@ -217,7 +249,7 @@ function limparModal() {
 async function salvarProcesso() {
   const titulo   = document.getElementById("f-tipo").value.trim();
   const numero   = document.getElementById("f-numero").value.trim();
-  const cliente = document.getElementById("f-cliente").value.trim();
+  const cliente  = document.getElementById("f-cliente").value.trim();
   const area     = document.getElementById("f-area").value;
   const resp     = document.getElementById("f-resp-modal").value;
   const status   = document.getElementById("f-status-modal").value;
@@ -226,16 +258,14 @@ async function salvarProcesso() {
   const valor    = document.getElementById("f-valor").value.trim();
   const prazo    = document.getElementById("f-prazo-modal").value;
 
-  // Validação
   if (!titulo) {
     Toast.show('Preencha o Tipo de Ação.', 'error');
     return;
   }
   if (!cliente) {
-  Toast.show('Preencha o nome do cliente.', 'error');
-  return;
-}
-
+    Toast.show('Preencha o nome do cliente.', 'error');
+    return;
+  }
   if (!area) {
     Toast.show('Selecione a Área.', 'error');
     return;
@@ -246,16 +276,16 @@ async function salvarProcesso() {
 
   try {
     const payload = {
-  titulo,
-  clienteNome: cliente,        // 👈 texto livre agora
-  area,
-  status,
-  numero:     numero   || undefined,
-  vara:       vara     || undefined,
-  comarca:    comarca  || undefined,
-  valorCausa: valor    ? Number(valor.replace(/\D/g, '')) : undefined,
-  prazo:      prazo    || undefined,
-};
+      titulo,
+      clienteNome: cliente,
+      area,
+      status,
+      numero:     numero   || undefined,
+      vara:       vara     || undefined,
+      comarca:    comarca  || undefined,
+      valorCausa: valor    ? Number(valor.replace(/\D/g, '')) : undefined,
+      prazo:      prazo    || undefined,
+    };
 
     const criado = await criarProcessoAPI(payload);
 
@@ -294,7 +324,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const usuario = Auth.getUsuario();
   if (usuario) {
-    // Sidebar
     const elNome  = document.getElementById('sidebar-nome');
     const elCargo = document.getElementById('sidebar-cargo');
     const elAv    = document.getElementById('sidebar-avatar');
@@ -302,13 +331,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (elCargo) elCargo.textContent = usuario.cargo;
     if (elAv)    elAv.textContent    = usuario.nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
 
-    // Select responsável do modal
     const selectResp = document.getElementById('f-resp-modal');
     if (selectResp) {
       selectResp.innerHTML = `<option value="${usuario.id}">${usuario.nome}</option>`;
     }
 
-    // Filtro responsável
     const selectFiltro = document.getElementById('f-responsavel');
     if (selectFiltro) {
       selectFiltro.innerHTML = `<option value="">Responsável</option><option value="${usuario.id}">${usuario.nome}</option>`;
