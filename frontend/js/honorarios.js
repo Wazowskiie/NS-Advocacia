@@ -25,7 +25,9 @@ let honorariosData = [];
 async function carregarHonorarios() {
   try {
     const dados = await Api.get('/financeiro?tipo=RECEITA');
-    honorariosData = (dados || []).map((h, i) => ({
+    honorariosData = (dados || [])
+  .filter(h => h.status !== 'CANCELADO')
+  .map((h, i) => ({
       id:       h.id,
       processo: h.processo?.titulo || '—',
       num:      h.processo?.numero || '—',
