@@ -34,6 +34,14 @@ function renderTabela(lista) {
       abrirPainel(btn.dataset.id);
     });
   });
+  tbody.querySelectorAll(".btn-excluir-cli").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const item = clientesData.find(c => String(c.id) === String(id));
+      confirmarExclusao(id, item);
+    });
+  });
 
   const n = lista.length;
   count.textContent = `${n} cliente${n !== 1 ? "s" : ""} encontrado${n !== 1 ? "s" : ""}`;
@@ -56,8 +64,51 @@ function rowHTML(c) {
       <div class="cli-cell">${c.resp}</div>
       <div class="cli-cell">${c.valor}</div>
       <div class="cli-num">${c.processos}</div>
-      <button class="btn-ver" onclick="window.location.href='cliente-detalhe.html?id=${c.id}'">Ver</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn-ver" data-id="${c.id}" onclick="window.location.href='cliente-detalhe.html?id=${c.id}'">Ver</button>
+        <button class="btn-excluir-cli" data-id="${c.id}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:0.5px solid #e8b4b0;background:#fdf0ef;color:#c0392b;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Excluir</button>
+      </div>
     </div>`;
+}
+
+// ---------- CONFIRMAÇÃO DE EXCLUSÃO ----------
+function confirmarExclusao(id, item) {
+  const existing = document.getElementById('confirm-excluir-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'confirm-excluir-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:2000';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 28px 20px;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:50%;background:#fdf0ef;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" fill="none" stroke="#c0392b" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:#1c1c1a">Excluir cliente?</div>
+          <div style="font-size:12px;color:#9a9a94;margin-top:2px">${item ? item.nome : 'Esta ação não pode ser desfeita.'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+        <button id="confirm-excluir-cancel" style="padding:8px 18px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.14);background:transparent;color:#6b6b67;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button id="confirm-excluir-ok" style="padding:8px 18px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Excluir</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  document.getElementById('confirm-excluir-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('confirm-excluir-ok').addEventListener('click', async () => {
+    overlay.remove();
+    try {
+      await Api.delete(`/clientes/${id}`);
+      Toast.show('Cliente excluído.', 'success');
+      await carregarEAplicar();
+    } catch (err) {
+      Toast.show('Erro ao excluir cliente.', 'error');
+    }
+  });
 }
 
 // ---------- PAINEL LATERAL ----------
@@ -114,7 +165,6 @@ function abrirPainel(id) {
 // ---------- FILTROS ----------
 function aplicarFiltros() {
   const q    = document.getElementById("f-busca").value.toLowerCase().trim();
-  // ✅ Corrigido: usa f-tipo (barra de filtros) não f-tipo-modal (modal de criação)
   const tipoVal = document.getElementById("f-tipo").value;
   const vip  = document.getElementById("f-vip").value;
   const resp = document.getElementById("f-responsavel").value;
@@ -124,7 +174,6 @@ function aplicarFiltros() {
             !c.email.toLowerCase().includes(q) &&
             !c.telefone.includes(q)) return false;
     if (tipoVal) {
-      // f-tipo usa valores PESSOA_FISICA / PESSOA_JURIDICA
       const tipoCliente = c.tipo === 'PJ' ? 'PESSOA_JURIDICA' : 'PESSOA_FISICA';
       if (tipoCliente !== tipoVal) return false;
     }
@@ -146,7 +195,7 @@ function aplicarFiltros() {
 
 function limparFiltros() {
   document.getElementById("f-busca").value       = "";
-  document.getElementById("f-tipo").value        = ""; // ✅ corrigido
+  document.getElementById("f-tipo").value        = "";
   document.getElementById("f-vip").value         = "";
   document.getElementById("f-responsavel").value = "";
   aplicarFiltros();
@@ -184,8 +233,6 @@ async function salvarCliente() {
   const cpfCnpj  = document.getElementById("f-doc").value.trim();
   const endereco = document.getElementById("f-endereco").value.trim();
   const tipoRaw  = document.getElementById("f-tipo-modal").value;
-
-  // Converte PF/PJ para o formato que o backend espera
   const tipo = tipoRaw === 'PJ' ? 'PESSOA_JURIDICA' : 'PESSOA_FISICA';
 
   if (!nome) {
